@@ -1,27 +1,28 @@
-#include "mainwindow.h"
-#include <QApplication>
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QDebug>
 #include <QMessageBox>
+#include <QApplication>
+#include "mainwindow.h"
 #include "connection.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+
+    // Make sure the QODBC driver is loaded
+    if (!QSqlDatabase::isDriverAvailable("QODBC")) {
+        qDebug() << "Error: QODBC driver not available!";
+        return -1;
+    }
+
     Connection c;
-    bool test=c.createconnect();
-    if(test)
-    {w.show();
-        QMessageBox::information(nullptr, QObject::tr("database is open"),
-                    QObject::tr("connection successful.\n"
-                                "Click Cancel to exit."), QMessageBox::Cancel);
-
-}
-    else
-        QMessageBox::critical(nullptr, QObject::tr("database is not open"),
-                    QObject::tr("connection failed.\n"
-                                "Click Cancel to exit."), QMessageBox::Cancel);
-
-
-
-    return a.exec();
+    if (c.createconnect()) {
+        MainWindow w;
+        w.show();
+        return a.exec();
+    } else {
+        qDebug() << "Database connection failed.";
+        return -1;
+    }
 }

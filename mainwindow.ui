@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1303</width>
-    <height>653</height>
+    <width>1371</width>
+    <height>667</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -514,7 +514,7 @@ QPushButton:disabled {
      <rect>
       <x>140</x>
       <y>0</y>
-      <width>1161</width>
+      <width>1241</width>
       <height>601</height>
      </rect>
     </property>
@@ -544,9 +544,64 @@ QFrame:hover {
       <rect>
        <x>30</x>
        <y>110</y>
-       <width>1011</width>
-       <height>371</height>
+       <width>1141</width>
+       <height>381</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QTableView Styling */
+QTableView {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Dark background */
+    color: #ffffff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    gridline-color: #00ff00;  /* Green gridlines */
+    selection-background-color: #2d89ef;  /* Blue background when selected */
+    selection-color: #ffffff;  /* White text when selected */
+}
+
+/* Header Styling */
+QHeaderView::section {
+    background-color: #3d3d3d;  /* Dark background for header */
+    color: #ffffff;  /* White text for headers */
+    border-style: solid;
+    border-width: 2px;
+    border-color: #00ff00;  /* Green border */
+    padding: 8px;
+    font-weight: bold;  /* Bold header text */
+}
+
+/* Hover effect for header */
+QHeaderView::section:hover {
+    background-color: #2d89ef;  /* Blue background on hover */
+    color: #ffffff;  /* Keep white text */
+}
+
+/* Odd rows */
+QTableView::item {
+    background-color: #2b2b2b;  /* Darker background for rows */
+    color: #ffffff;  /* White text */
+}
+
+/* Even rows */
+QTableView::item:alternate {
+    background-color: #3d3d3d;  /* Slightly lighter for alternate rows */
+}
+
+/* Hover effect for rows */
+QTableView::item:hover {
+    background-color: #505050;  /* Lighter gray on hover */
+    color: #ffffff;  /* Keep text white */
+}
+
+/* Selected row */
+QTableView::item:selected {
+    background-color: #2d89ef;  /* Blue background for selected rows */
+    color: #ffffff;  /* White text */
+}
+</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pb_select">
@@ -605,266 +660,10 @@ QPushButton:disabled {
       <string>Edit</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="cb_tri">
-     <property name="geometry">
-      <rect>
-       <x>650</x>
-       <y>70</y>
-       <width>112</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>8</pointsize>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QComboBox {
-    background-color: #3d3d3d;  /* Same dark background as QTableWidget */
-    color: #ffffff;  /* White text like in QTableWidget */
-    border: 3px solid #00ff00;  /* Same border color and width as QTableWidget */
-    padding: 5px;
-    border-radius: 5px;  /* Slight border radius to make it look sleek */
-    transition: background-color 0.3s ease, border-color 0.3s ease;  /* Animation for background and border */
-}
-
-/* ComboBox Hover/Focus effect */
-QComboBox:hover {
-    background-color: #2d89ef;  /* Change background to blue on hover/focus */
-    border-color: #2d89ef;  /* Change border to blue on hover/focus */
-}
-
-/* ComboBox dropdown menu */
-QComboBox QAbstractItemView {
-    background-color: #3d3d3d;  /* Dark background for dropdown */
-    color: #ffffff;  /* White text for dropdown items */
-    border: 3px solid #00ff00;  /* Same border as the QComboBox */
-    selection-background-color: #00ff00;  /* Same selection color as QTableWidget */
-    selection-color: #ffffff;  /* White text when an item is selected */
-}
-
-/* ComboBox individual items */
-QComboBox::item {
-    background-color: #3d3d3d;  /* Dark background for items */
-    color: #ffffff;  /* White text */
-    padding: 5px;  /* Padding for item spacing */
-}
-
-/* ComboBox dropdown arrow */
-QComboBox::down-arrow {
-    image: url(:/resources/dropdown_arrow.png);  /* Custom arrow if needed */
-    width: 12px;
-    height: 12px;
-}
-
-/* ComboBox dropdown arrow button */
-QComboBox::drop-down {
-    background-color: #3d3d3d;  /* Dark background for the arrow area */
-    border-left: 3px solid #00ff00;  /* Same left border as QComboBox */
-}
-
-/* Optional: Animation for dropdown menu opening */
-QComboBox QAbstractItemView {
-    background-color: #3d3d3d;  /* Dark background for dropdown */
-    color: #ffffff;  /* White text for dropdown items */
-    border: 3px solid #00ff00;  /* Same border as the QComboBox */
-    selection-background-color: #00ff00;  /* Same selection color as QTableWidget */
-    selection-color: #ffffff;  /* White text when an item is selected */
-    transition: background-color 0.3s ease, border-color 0.3s ease;  /* Smooth transitions */
-}</string>
-     </property>
-     <item>
-      <property name="text">
-       <string>CIN</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Name</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Hiring Date</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Salary</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Birthday</string>
-      </property>
-     </item>
-    </widget>
-    <widget class="QRadioButton" name="rb_asc">
-     <property name="geometry">
-      <rect>
-       <x>780</x>
-       <y>70</y>
-       <width>95</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QCheckBox {
-	color:rgb(223,219,210);
-	padding: 2px;
-}
-QCheckBox:hover {
-	border-radius:4px;
-	border-style:solid;
-	padding-left: 1px;
-	padding-right: 1px;
-	padding-bottom: 1px;
-	padding-top: 1px;
-	border-width:1px;
-	border-color: rgb(87, 97, 106);
-	background-color:qlineargradient(spread:pad, x1:0.5, y1:0.7, x2:0.5, y2:0.3, stop:0 rgba(87, 97, 106, 150), stop:1 rgba(93, 103, 113, 150));
-}
-QCheckBox::indicator:checked {
-	border-radius:4px;
-	border-style:solid;
-	border-width:1px;
-	border-color: rgb(180,180,180);
-  	background-color:qlineargradient(spread:pad, x1:0.5, y1:0.7, x2:0.5, y2:0.3, stop:0 rgba(87, 97, 106, 255), stop:1 rgba(93, 103, 113, 255));
-}
-QCheckBox::indicator:unchecked {
-	border-radius:4px;
-	border-style:solid;
-	border-width:1px;
-	border-color: rgb(87, 97, 106);
-  	background-color:rgb(255,255,255);
-}</string>
-     </property>
-     <property name="text">
-      <string>ASC</string>
-     </property>
-    </widget>
-    <widget class="QRadioButton" name="rb_desc">
-     <property name="geometry">
-      <rect>
-       <x>880</x>
-       <y>70</y>
-       <width>95</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QCheckBox {
-	color:rgb(223,219,210);
-	padding: 2px;
-}
-QCheckBox:hover {
-	border-radius:4px;
-	border-style:solid;
-	padding-left: 1px;
-	padding-right: 1px;
-	padding-bottom: 1px;
-	padding-top: 1px;
-	border-width:1px;
-	border-color: rgb(87, 97, 106);
-	background-color:qlineargradient(spread:pad, x1:0.5, y1:0.7, x2:0.5, y2:0.3, stop:0 rgba(87, 97, 106, 150), stop:1 rgba(93, 103, 113, 150));
-}
-QCheckBox::indicator:checked {
-	border-radius:4px;
-	border-style:solid;
-	border-width:1px;
-	border-color: rgb(180,180,180);
-  	background-color:qlineargradient(spread:pad, x1:0.5, y1:0.7, x2:0.5, y2:0.3, stop:0 rgba(87, 97, 106, 255), stop:1 rgba(93, 103, 113, 255));
-}
-QCheckBox::indicator:unchecked {
-	border-radius:4px;
-	border-style:solid;
-	border-width:1px;
-	border-color: rgb(87, 97, 106);
-  	background-color:rgb(255,255,255);
-}</string>
-     </property>
-     <property name="text">
-      <string>DESC</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btnSearchPupils">
+    <widget class="QPushButton" name="removeButton">
      <property name="geometry">
       <rect>
        <x>350</x>
-       <y>510</y>
-       <width>151</width>
-       <height>30</height>
-      </rect>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>30</height>
-      </size>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-     <property name="toolTip">
-      <string>Найти учеников по ФИО</string>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">/* QPushButton Styling */
-QPushButton {
-    border-style: solid;
-    background-color: #3d3d3d;  /* Same dark background */
-    color: #fff;  /* White text */
-    border-radius: 7px;  /* Rounded corners */
-    border-width: 2px;  /* Set border width */
-    border-color: #00ff00;  /* Orange border */
-    padding: 8px 15px;  /* Padding for button spacing */
-    outline: none; /* Remove default focus outline */
-}
-
-/* Hover effect */
-QPushButton:hover {
-    color: #ccc;  /* Light gray text on hover */
-    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
-    border-color: #2d89ef;  /* Blue border on hover */
-}
-
-/* Pressed/Clicked effect (with border unchanged) */
-QPushButton:pressed {
-    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on press */
-    border-color: #da532c;  /* Keep the orange border when pressed */
-    border-width: 2px;  /* Keep the border width */
-}
-
-
-/* Checked/Pressed button stays in this state */
-QPushButton:checked {
-    background-color: #76797C;  /* Grayish background when checked */
-    border-color: #6A6969;  /* Gray border when checked */
-    color: #ffffff;  /* White text when checked */
-}
-
-/* Disabled Button */
-QPushButton:disabled {
-    background-color: #2b2b2b;  /* Darker background for disabled button */
-    color: #aaaaaa;  /* Gray text when disabled */
-    border-color: #555555;  /* Lighter border when disabled */
-}
-</string>
-     </property>
-     <property name="text">
-      <string>Search</string>
-     </property>
-     <property name="icon">
-      <iconset resource="Resources/img.qrc">
-       <normaloff>:/icons/img/search.png</normaloff>:/icons/img/search.png</iconset>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btnRemoveClass">
-     <property name="geometry">
-      <rect>
-       <x>520</x>
        <y>510</y>
        <width>151</width>
        <height>30</height>
@@ -927,7 +726,7 @@ QPushButton:disabled {
        <normaloff>:/icons/img/delete.png</normaloff>:/icons/img/delete.png</iconset>
      </property>
     </widget>
-    <widget class="QPushButton" name="btnAddClass">
+    <widget class="QPushButton" name="addButton">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -996,8 +795,8 @@ QPushButton:disabled {
     <widget class="QPushButton" name="pushButton_26">
      <property name="geometry">
       <rect>
-       <x>1040</x>
-       <y>510</y>
+       <x>1130</x>
+       <y>10</y>
        <width>40</width>
        <height>40</height>
       </rect>
@@ -1068,240 +867,6 @@ QPushButton:disabled {
       </size>
      </property>
     </widget>
-    <widget class="QTableWidget" name="tableWidget">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>110</y>
-       <width>1061</width>
-       <height>371</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">/* QTableWidget Styling */
-QTableWidget {
-    background-color: #3d3d3d; /* Dark background */
-    color: #fff; /* White text */
-    selection-background-color: #00ff00; /* Orange selection color */
-    border: none; /* Remove outer border */
-    gridline-color: #888888; /* Softer gray gridlines */
-    font-size: 14px; /* Adjust font size for readability */
-    padding: 0px; /* Remove any extra padding around the table */
-}
-
-/* Header Styling */
-QHeaderView::section {
-    background-color: #2b2b2b; /* Darker background for headers */
-    color: #ffffff; /* White text */
-    border-style: none; /* Remove borders between header sections */
-    padding: 8px; /* Adjust padding for better spacing */
-    font-weight: bold; /* Make header text bold */
-    text-align: center; /* Center align the header text */
-}
-
-/* Adjusting Row and Column Header Appearance */
-QTableWidget::horizontalHeader {
-    background-color: #2b2b2b; /* Ensure header background color matches */
-    color: #ffffff; /* Keep the text white */
-    border: none; /* Remove border */
-    height: 30px; /* Adjust height if needed */
-}
-
-QTableWidget::verticalHeader {
-    background-color: #2b2b2b; /* Ensure header background color matches */
-    color: #ffffff; /* Keep the text white */
-    border: none; /* Remove border */
-    width: 30px; /* Adjust width if needed */
-}
-
-/* Cell Styling */
-QTableWidget::item {
-    padding: 8px; /* Add padding inside table cells for better layout */
-    background-color: #3d3d3d; /* Default background for cells */
-}
-
-/* Alternating Row Colors */
-QTableWidget::item:nth-child(even) {
-    background-color: #444444; /* Slightly lighter color for alternating rows */
-}
-
-/* Selected Item */
-QTableWidget::item:selected {
-    background-color: #00ff00; /* Orange background for selected row */
-    color: #ffffff; /* Ensure the text remains white and readable */
-}
-
-/* Hover Effect for Table Rows */
-QTableWidget::item:hover {
-    background-color: #555555; /* Darker background when hovering */
-}
-
-/* Remove Focus Outline from Selected Cells */
-QTableWidget::item:focus {
-    outline: none;
-}
-</string>
-     </property>
-     <property name="rowCount">
-      <number>7</number>
-     </property>
-     <property name="columnCount">
-      <number>9</number>
-     </property>
-     <row>
-      <property name="text">
-       <string>Staff1</string>
-      </property>
-     </row>
-     <row>
-      <property name="text">
-       <string>Staff2</string>
-      </property>
-     </row>
-     <row>
-      <property name="text">
-       <string>Staff3</string>
-      </property>
-     </row>
-     <row>
-      <property name="text">
-       <string>Staff4</string>
-      </property>
-     </row>
-     <row>
-      <property name="text">
-       <string>Staff5</string>
-      </property>
-     </row>
-     <row>
-      <property name="text">
-       <string>Staff6</string>
-      </property>
-     </row>
-     <row>
-      <property name="text">
-       <string>Staff7</string>
-      </property>
-     </row>
-     <column>
-      <property name="text">
-       <string>ID</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>CIN</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Name</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Hiring Date</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Role</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Salary</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Birthday</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Mail</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Phone</string>
-      </property>
-     </column>
-    </widget>
-    <widget class="QPushButton" name="title_live_pushButton_5">
-     <property name="geometry">
-      <rect>
-       <x>960</x>
-       <y>70</y>
-       <width>118</width>
-       <height>30</height>
-      </rect>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>50</width>
-       <height>30</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">/* QPushButton Styling */
-QPushButton {
-    border-style: solid;
-    background-color: #3d3d3d;  /* Same dark background */
-    color: #fff;  /* White text */
-    border-radius: 7px;  /* Rounded corners */
-    border-width: 2px;  /* Set border width */
-    border-color: #00ff00;  /* Orange border */
-    padding: 8px 15px;  /* Padding for button spacing */
-    outline: none; /* Remove default focus outline */
-}
-
-/* Hover effect */
-QPushButton:hover {
-    color: #ccc;  /* Light gray text on hover */
-    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
-    border-color: #2d89ef;  /* Blue border on hover */
-}
-
-/* Pressed/Clicked effect (with border unchanged) */
-QPushButton:pressed {
-    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on press */
-    border-color: #da532c;  /* Keep the orange border when pressed */
-    border-width: 2px;  /* Keep the border width */
-}
-
-
-/* Checked/Pressed button stays in this state */
-QPushButton:checked {
-    background-color: #76797C;  /* Grayish background when checked */
-    border-color: #6A6969;  /* Gray border when checked */
-    color: #ffffff;  /* White text when checked */
-}
-
-/* Disabled Button */
-QPushButton:disabled {
-    background-color: #2b2b2b;  /* Darker background for disabled button */
-    color: #aaaaaa;  /* Gray text when disabled */
-    border-color: #555555;  /* Lighter border when disabled */
-}
-</string>
-     </property>
-     <property name="text">
-      <string>Trie</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="autoExclusive">
-      <bool>true</bool>
-     </property>
-    </widget>
     <widget class="QLineEdit" name="chercher">
      <property name="geometry">
       <rect>
@@ -1327,15 +892,9 @@ QPushButton:disabled {
     <zorder>chercher</zorder>
     <zorder>tableView</zorder>
     <zorder>pb_select</zorder>
-    <zorder>cb_tri</zorder>
-    <zorder>rb_asc</zorder>
-    <zorder>rb_desc</zorder>
-    <zorder>btnSearchPupils</zorder>
-    <zorder>btnRemoveClass</zorder>
-    <zorder>btnAddClass</zorder>
+    <zorder>removeButton</zorder>
+    <zorder>addButton</zorder>
     <zorder>pushButton_26</zorder>
-    <zorder>tableWidget</zorder>
-    <zorder>title_live_pushButton_5</zorder>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -1343,7 +902,7 @@ QPushButton:disabled {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1303</width>
+     <width>1371</width>
      <height>25</height>
     </rect>
    </property>
