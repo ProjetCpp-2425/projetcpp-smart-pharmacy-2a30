@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "addemployee.h"
+#include "editemployee.h"
 #include <QSqlQuery>
 #include <QSqlQueryModel>
 #include <QSqlError>
@@ -21,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Connect Add and Remove buttons to their respective slots
     connect(ui->addButton, &QPushButton::clicked, this, &MainWindow::on_addButton_clicked);
     connect(ui->removeButton, &QPushButton::clicked, this, &MainWindow::on_removeButton_clicked);
+    connect(ui->editButton, &QPushButton::clicked, this, &MainWindow::on_editButton_clicked);
 }
 
 // Destructor
@@ -89,5 +91,48 @@ void MainWindow::on_removeButton_clicked()
         }
     } else {
         QMessageBox::warning(this, "Error", "No employee selected for removal.");
+    }
+}
+void MainWindow::on_editButton_clicked()
+{
+    // Get the selected row from the table
+    QModelIndexList selectedRows = ui->tableView->selectionModel()->selectedRows();
+
+    if (selectedRows.size() > 0) {
+        int row = selectedRows[0].row();
+        QString cinemp = ui->tableView->model()->index(row, 0).data().toString();  // Get the CINEMP of the selected employee
+
+        // Fetch the selected employee's data from the database
+        QSqlQuery query;
+        query.prepare("SELECT * FROM EMPLOYEE WHERE CINEMP = :cinemp");
+        query.bindValue(":cinemp", cinemp);
+
+        if (query.exec() && query.next()) {
+            // Pass the employee data to the EditEmployeeDialog
+            EditEmployee editEmployeeDialog(this);
+
+            editEmployeeDialog.setEmployeeData(query.value("CINEMP").toString(),
+                                               query.value("IDEMP").toString(),
+                                               query.value("FULL_NAME").toString(),
+                                               query.value("HIRE_DATE").toDate(),
+                                               query.value("ROLE").toString(),
+                                               query.value("SALARY").toDouble(),
+                                               query.value("EMAIL").toString(),
+                                               query.value("AGE").toInt(),
+                                               query.value("GENDER").toString(),
+                                               query.value("PHONE").toString());
+
+            if (editEmployeeDialog.exec() == QDialog::Accepted) {
+                // If dialog was accepted, update the employee in the database
+                editEmployeeDialog.updateEmployeeInDatabase();
+
+                // Reload the employee data to reflect the changes
+                loadEmployeeData();
+            }
+        } else {
+            QMessageBox::warning(this, "Error", "Failed to retrieve employee data: " + query.lastError().text());
+        }
+    } else {
+        QMessageBox::warning(this, "Error", "No employee selected for editing.");
     }
 }

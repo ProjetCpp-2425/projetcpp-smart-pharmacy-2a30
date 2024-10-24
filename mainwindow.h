@@ -27,6 +27,9 @@ private slots:
     // Slot for removing employee
     void on_removeButton_clicked();
 
+    // Slot for editing employee (this will open the edit dialog)
+    void on_editButton_clicked();  // New function for Edit button click
+
 private:
     Ui::MainWindow *ui;  // UI pointer
 };

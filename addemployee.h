@@ -33,6 +33,9 @@ public:
 
 private:
     Ui::AddEmployee *ui;
+
+    // Function to check if a field is unique in the database
+    bool isUnique(const QString &field, const QString &value, bool caseInsensitive);  // Add the bool caseInsensitive parameter
 };
 
 #endif // ADDEMPLOYEE_H
