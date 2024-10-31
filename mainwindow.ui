@@ -514,7 +514,7 @@ QPushButton:disabled {
      <rect>
       <x>140</x>
       <y>0</y>
-      <width>1241</width>
+      <width>1231</width>
       <height>601</height>
      </rect>
     </property>
@@ -542,27 +542,27 @@ QFrame:hover {
     <widget class="QTableView" name="tableView">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>110</y>
-       <width>1141</width>
-       <height>381</height>
+       <x>10</x>
+       <y>60</y>
+       <width>1211</width>
+       <height>431</height>
       </rect>
      </property>
      <property name="styleSheet">
       <string notr="true">/* QTableView Styling */
 QTableView {
-    border-style: solid;
     background-color: #3d3d3d;  /* Dark background */
     color: #ffffff;  /* White text */
-    border-radius: 7px;  /* Rounded corners */
-    border-width: 2px;  /* Set border width */
-    border-color: #00ff00;  /* Green border */
+    border: 1px solid #00ff00;  /* Green border */
+    border-radius: 8px;  /* Rounded corners */
     gridline-color: #00ff00;  /* Green gridlines */
-    selection-background-color: #2d89ef;  /* Blue background when selected */
+    selection-background-color: #2d89ef;  /* Bright blue background when selected */
     selection-color: #ffffff;  /* White text when selected */
+    alternate-background-color: #2b2b2b;  /* Alternate row background */
+    padding: 8px;  /* Increased padding */
 }
 
-/* Header Styling */
+/* Header Styling for Horizontal Headers */
 QHeaderView::section {
     background-color: #3d3d3d;  /* Dark background for header */
     color: #ffffff;  /* White text for headers */
@@ -571,6 +571,20 @@ QHeaderView::section {
     border-color: #00ff00;  /* Green border */
     padding: 8px;
     font-weight: bold;  /* Bold header text */
+    font-size: 12pt;
+}
+
+/* Vertical Header (Row Number Bar) Styling */
+QHeaderView::section:vertical {
+    background-color: #3d3d3d;  /* Dark background for row number bar */
+    color: #ffffff;  /* White text for row numbers */
+    border-style: solid;
+    border-width: 2px;
+    border-color: #00ff00;  /* Green border */
+    padding: 8px;  /* Increase padding for row number cells */
+    font-weight: bold;
+    font-size: 10pt;
+    min-width: 45px;  /* Increase width of row number bar */
 }
 
 /* Hover effect for header */
@@ -579,10 +593,11 @@ QHeaderView::section:hover {
     color: #ffffff;  /* Keep white text */
 }
 
-/* Odd rows */
+/* Row Styling */
 QTableView::item {
-    background-color: #2b2b2b;  /* Darker background for rows */
+    background-color: #333333;  /* Consistent background for rows */
     color: #ffffff;  /* White text */
+    padding: 6px;  /* Increased padding for readability */
 }
 
 /* Even rows */
@@ -594,12 +609,15 @@ QTableView::item:alternate {
 QTableView::item:hover {
     background-color: #505050;  /* Lighter gray on hover */
     color: #ffffff;  /* Keep text white */
+    border: 1px solid #00ff00;  /* Green border on hover */
 }
 
-/* Selected row */
+/* Selected row with clearer styling */
 QTableView::item:selected {
-    background-color: #2d89ef;  /* Blue background for selected rows */
+    background-color: #2d89ef;  /* Bright blue background for selected rows */
     color: #ffffff;  /* White text */
+    border: 2px solid #00ff00;  /* Thicker green border around selected row */
+    padding: 6px;  /* Ensure padding to avoid text clipping */
 }
 </string>
      </property>
@@ -607,9 +625,9 @@ QTableView::item:selected {
     <widget class="QPushButton" name="editButton">
      <property name="geometry">
       <rect>
-       <x>180</x>
+       <x>220</x>
        <y>510</y>
-       <width>151</width>
+       <width>81</width>
        <height>31</height>
       </rect>
      </property>
@@ -618,17 +636,19 @@ QTableView::item:selected {
 QPushButton {
     border-style: solid;
     background-color: #3d3d3d;  /* Same dark background */
-    color: #fff;  /* White text */
+    color: #ffffff;  /* White text */
+    font-size: 11px;  /* Increase font size */
+    font-weight: bold;  /* Make text bold */
     border-radius: 7px;  /* Rounded corners */
     border-width: 2px;  /* Set border width */
-    border-color: #00ff00;  /* Orange border */
+    border-color: #00ff00;  /* Green border */
     padding: 8px 15px;  /* Padding for button spacing */
     outline: none; /* Remove default focus outline */
 }
 
 /* Hover effect */
 QPushButton:hover {
-    color: #ccc;  /* Light gray text on hover */
+    color: #e0e0e0;  /* Slightly brighter text on hover */
     background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
     border-color: #2d89ef;  /* Blue border on hover */
 }
@@ -639,7 +659,6 @@ QPushButton:pressed {
     border-color: #da532c;  /* Keep the orange border when pressed */
     border-width: 2px;  /* Keep the border width */
 }
-
 
 /* Checked/Pressed button stays in this state */
 QPushButton:checked {
@@ -665,7 +684,7 @@ QPushButton:disabled {
       <rect>
        <x>350</x>
        <y>510</y>
-       <width>151</width>
+       <width>111</width>
        <height>30</height>
       </rect>
      </property>
@@ -680,17 +699,19 @@ QPushButton:disabled {
 QPushButton {
     border-style: solid;
     background-color: #3d3d3d;  /* Same dark background */
-    color: #fff;  /* White text */
+    color: #ffffff;  /* White text */
+    font-size: 11px;  /* Increase font size */
+    font-weight: bold;  /* Make text bold */
     border-radius: 7px;  /* Rounded corners */
     border-width: 2px;  /* Set border width */
-    border-color: #00ff00;  /* Orange border */
+    border-color: #00ff00;  /* Green border */
     padding: 8px 15px;  /* Padding for button spacing */
     outline: none; /* Remove default focus outline */
 }
 
 /* Hover effect */
 QPushButton:hover {
-    color: #ccc;  /* Light gray text on hover */
+    color: #e0e0e0;  /* Slightly brighter text on hover */
     background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
     border-color: #2d89ef;  /* Blue border on hover */
 }
@@ -701,7 +722,6 @@ QPushButton:pressed {
     border-color: #da532c;  /* Keep the orange border when pressed */
     border-width: 2px;  /* Keep the border width */
 }
-
 
 /* Checked/Pressed button stays in this state */
 QPushButton:checked {
@@ -729,9 +749,9 @@ QPushButton:disabled {
     <widget class="QPushButton" name="addButton">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>90</x>
        <y>510</y>
-       <width>151</width>
+       <width>81</width>
        <height>30</height>
       </rect>
      </property>
@@ -746,17 +766,19 @@ QPushButton:disabled {
 QPushButton {
     border-style: solid;
     background-color: #3d3d3d;  /* Same dark background */
-    color: #fff;  /* White text */
+    color: #ffffff;  /* White text */
+    font-size: 11px;  /* Increase font size */
+    font-weight: bold;  /* Make text bold */
     border-radius: 7px;  /* Rounded corners */
     border-width: 2px;  /* Set border width */
-    border-color: #00ff00;  /* Orange border */
+    border-color: #00ff00;  /* Green border */
     padding: 8px 15px;  /* Padding for button spacing */
     outline: none; /* Remove default focus outline */
 }
 
 /* Hover effect */
 QPushButton:hover {
-    color: #ccc;  /* Light gray text on hover */
+    color: #e0e0e0;  /* Slightly brighter text on hover */
     background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
     border-color: #2d89ef;  /* Blue border on hover */
 }
@@ -767,7 +789,6 @@ QPushButton:pressed {
     border-color: #da532c;  /* Keep the orange border when pressed */
     border-width: 2px;  /* Keep the border width */
 }
-
 
 /* Checked/Pressed button stays in this state */
 QPushButton:checked {
@@ -792,11 +813,11 @@ QPushButton:disabled {
        <normaloff>:/icons/img/add.png</normaloff>:/icons/img/add.png</iconset>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_26">
+    <widget class="QPushButton" name="generatePdfButton">
      <property name="geometry">
       <rect>
-       <x>1130</x>
-       <y>10</y>
+       <x>10</x>
+       <y>550</y>
        <width>40</width>
        <height>40</height>
       </rect>
@@ -867,34 +888,155 @@ QPushButton:disabled {
       </size>
      </property>
     </widget>
-    <widget class="QLineEdit" name="chercher">
+    <widget class="QComboBox" name="comboBox">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>20</y>
-       <width>411</width>
+       <x>1100</x>
+       <y>500</y>
+       <width>111</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QComboBox Styling */
+QComboBox {
+    background-color: #3d3d3d;  /* Dark background */
+    color: #ffffff;  /* White text */
+    font-size: 14px;  /* Increase font size */
+    font-weight: bold;  /* Bold text */
+    border-radius: 7px;  /* Rounded corners */
+    border: 2px solid #00ff00;  /* Green border */
+    padding: 8px 15px;  /* Padding for spacing */
+    outline: none;  /* Remove default focus outline */
+    min-height: 30px; /* Ensures enough height */
+}
+
+/* Drop-down arrow styling */
+QComboBox::drop-down {
+    border: none;  /* Remove border around arrow */
+    background: transparent;  /* Transparent background */
+}
+
+QComboBox::down-arrow {
+    image: url(/path/to/your/arrow-icon.png); /* Custom arrow icon */
+    width: 12px;  /* Adjust size as needed */
+    height: 12px;
+}
+
+/* List view (drop-down) */
+QComboBox QAbstractItemView {
+    background-color: #3d3d3d;  /* Dark background for list */
+    color: #ffffff;  /* White text in list */
+    border: 2px solid #00ff00;  /* Green border */
+    selection-background-color: #2d89ef;  /* Blue background for selected item */
+    selection-color: #ffffff;  /* White text for selected item */
+    border-radius: 7px;  /* Rounded corners */
+}
+
+/* Hover effect */
+QComboBox:hover {
+    color: #e0e0e0;  /* Slightly brighter text on hover */
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Pressed/Checked effect */
+QComboBox:pressed, QComboBox:on {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on press */
+    border-color: #da532c;  /* Orange border when pressed */
+}
+
+/* Disabled ComboBox */
+QComboBox:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border for disabled */
+}
+</string>
+     </property>
+     <item>
+      <property name="text">
+       <string>Salary</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Hire Date</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Role</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Age</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Gender</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QPushButton" name="sortButton">
+     <property name="geometry">
+      <rect>
+       <x>1130</x>
+       <y>550</y>
+       <width>51</width>
        <height>31</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">QLineEdit {
-	border-width: 1px; border-radius: 4px;
-	border-color: rgb(58, 58, 58);
-	border-style: inset;
-	padding: 0 8px;
-	color: rgb(255, 255, 255);
-	background:rgb(100, 100, 100);
-	selection-background-color: rgb(187, 187, 187);
-	selection-color: rgb(60, 63, 65);
-}</string>
+      <string notr="true">/* QPushButton Styling */
+QPushButton {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background */
+    color: #ffffff;  /* White text */
+    font-size: 11px;  /* Increase font size */
+    font-weight: bold;  /* Make text bold */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 8px 15px;  /* Padding for button spacing */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Hover effect */
+QPushButton:hover {
+    color: #e0e0e0;  /* Slightly brighter text on hover */
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Pressed/Clicked effect (with border unchanged) */
+QPushButton:pressed {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on press */
+    border-color: #da532c;  /* Keep the orange border when pressed */
+    border-width: 2px;  /* Keep the border width */
+}
+
+/* Checked/Pressed button stays in this state */
+QPushButton:checked {
+    background-color: #76797C;  /* Grayish background when checked */
+    border-color: #6A6969;  /* Gray border when checked */
+    color: #ffffff;  /* White text when checked */
+}
+
+/* Disabled Button */
+QPushButton:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled button */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+     <property name="text">
+      <string>OK</string>
      </property>
     </widget>
-    <zorder>chercher</zorder>
-    <zorder>tableView</zorder>
-    <zorder>editButton</zorder>
-    <zorder>removeButton</zorder>
-    <zorder>addButton</zorder>
-    <zorder>pushButton_26</zorder>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

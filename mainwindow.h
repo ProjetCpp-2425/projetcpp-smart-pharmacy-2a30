@@ -30,6 +30,9 @@ private slots:
     // Slot for editing employee (this will open the edit dialog)
     void on_editButton_clicked();  // New function for Edit button click
 
+    void onSortButtonClicked();
+
+    void generatePdf();
 private:
     Ui::MainWindow *ui;  // UI pointer
 };

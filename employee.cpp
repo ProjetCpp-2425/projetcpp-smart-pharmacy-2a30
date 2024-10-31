@@ -96,3 +96,11 @@ bool Employee::editEmployee(QString idemp) {
 
     return query.exec();
 }
+QSqlQueryModel* Employee::sortEmployees(QString criterion) {
+    QSqlQueryModel* model = new QSqlQueryModel();
+
+    QString queryStr = "SELECT * FROM employee ORDER BY " + criterion;
+    model->setQuery(queryStr);
+
+    return model;
+}

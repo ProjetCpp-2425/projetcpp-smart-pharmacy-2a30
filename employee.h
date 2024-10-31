@@ -25,6 +25,7 @@ public:
     int getAge();
     QString getGender();
     int getPhone();
+    QSqlQueryModel* sortEmployees(QString criterion);
 
     // Setters
     void setCinEmp(int cinemp);
