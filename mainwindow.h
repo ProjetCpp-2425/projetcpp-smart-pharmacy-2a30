@@ -1,37 +1,67 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
+#include<QTableWidget>
 #include <QMainWindow>
-#include <QSqlQueryModel>
-#include <QSqlQuery>
+#include<QSqlDatabase>
+#include<supplier.h>
 
-namespace Ui {
-class MainWindow;
-}
+QT_BEGIN_NAMESPACE
+namespace Ui { class MainWindow; }
+QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    QSqlDatabase db;
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+   void connectToDatabase();
+   //QVector<Transaction> getTransactions();
+
+   // QList<Transaction> *executeQuery(QString request);
+    //QString escapeCsvValue(const QString &value);
+    //QString exportTableToexcel(QTableWidget* table);
+    //QList<int>* getTransactionYears(QVector<Transaction> transactions);
+    //Statistics fillStatestics(QVector<Transaction> transactions,int year);
+    // void updateChart();
+   void getSupplier();
+
+
+
+
+
 
 private slots:
-    // Function to load supplier data from the database
-    void loadSupplierData();
+   // void on_typeRecord_currentIndexChanged(int index);
 
-    // Slot for adding supplier (this will open the dialog)
-    void on_addButton_clicked();
 
-    // Slot for removing supplier
-    void on_removeButton_clicked();
+   // void on_pushButton_17_clicked();
 
-    // Slot for editing supplier (this will open the edit dialog)
-    void on_editButton_clicked();  // New function for Edit button click
+  //  void on_listTransaction_cellDoubleClicked(int row, int column);
+
+   // void on_typeRecord_2_currentIndexChanged(int index);
+
+   // void on_typeRecord_2_currentTextChanged(const QString &arg1);
+
+
+
+   // void on_pushButton_15_clicked();
+
+    //void on_pushButton_2_clicked();
+
+    //void on_widget_16_customContextMenuRequested(const QPoint &pos);
+
+   // void on_lineEdit_textChanged(const QString &arg1);
+
+    //void on_date_Search_textChanged(const QString &arg1);
+
+    //void on_search_id_textChanged(const QString &arg1);
+
+   void on_add_supplier_clicked();
 
 private:
-    Ui::MainWindow *ui;  // UI pointer
+    Ui::MainWindow *ui;
 };
-
 #endif // MAINWINDOW_H
