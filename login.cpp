@@ -13,6 +13,7 @@ Login::Login(QWidget *parent) :
     ui(new Ui::Login)
 {
     ui->setupUi(this);
+    this->setWindowTitle("PHARMEASE - Login");
 
     // Set the stacked widget to start on the login page
     ui->stackedWidget->setCurrentWidget(ui->login);

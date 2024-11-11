@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->setWindowTitle("PHARMEASE - Dashboard");
     qDebug() << "Available database drivers: " << QSqlDatabase::drivers();
 
     // Load employees into the table view on startup

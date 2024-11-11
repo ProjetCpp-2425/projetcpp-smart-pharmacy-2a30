@@ -1,6 +1,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QDebug>
+#include <QIcon>
 #include <QMessageBox>
 #include <QApplication>
 #include "mainwindow.h"
@@ -10,6 +11,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    // Set the application icon globally before showing any windows
+    a.setWindowIcon(QIcon("E:/2A/projetcpp-smart-pharmacy-2a30/Resources/icon.png"));
 
     // Ensure QODBC driver is loaded
     if (!QSqlDatabase::isDriverAvailable("QODBC")) {
