@@ -1,222 +1,243 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <supplier.h>
-#include <QtSql/QSqlDatabase>
-#include <string>
-#include <QFile>
-#include <QDate>
-#include <QDebug>
-#include <QtSql/QSqlError>
+#include "product.h"
 #include <QMessageBox>
-#include <QSqlQueryModel>
-#include <QtSql/QSqlQuery>
-#include <list>
-#include <supplier.h>
-#include <QtPrintSupport/QPrinter>
+#include <QApplication>
+#include <QIntValidator>
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QPdfWriter>
 #include <QPainter>
 #include <QFileDialog>
-#include <QTextStream>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QMainWindow>
-#include <QMenu>
-#include <QtCharts/QPieSeries>
-#include <QVector>
-#include <QVBoxLayout>
-#include <iostream>
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setWindowTitle("Gestion de Produits");  // Set the window title
+    ui->oui->setModel(product.afficher());
 }
-
-MainWindow::~MainWindow() {
-    if (db.isOpen()) {
-        db.close();
-    }
+MainWindow::~MainWindow()
+{
     delete ui;
 }
 
-void MainWindow::connectToDatabase() {
-    // Initialize the database connection
-    db = QSqlDatabase::addDatabase("QODBC");
-    db.setDatabaseName("2a30source");
-    db.setUserName("projetcpp2a30");
-    db.setPassword("2a30user");
-
-    // Attempt to open the database connection
-    if (!db.open()) {
-        // Display an error message box if connection fails
-        QMessageBox::critical(this, "Database Connection Error",
-                              "Unable to connect to the database: " + db.lastError().text());
-        qDebug() << "Database connection error: " << db.lastError().text();
-    } else {
-        qDebug() << "Database connected successfully!";
-    }
-}
-
-void MainWindow::getSupplier(){
-    if (!db.isOpen())
-        connectToDatabase();
-    if (!db.open()) {
-        qDebug() << "Error, unable to connect to database";
-        qDebug() << db.lastError().text();
-        return;
-    }
-
-    QSqlQuery query(db);
-    if (!query.exec("SELECT * FROM supplier;")) {
-        qDebug() << "Error executing query: " << query.lastError().text();
-        return;
-    }
-
-    int row = 0;
-    ui->listsupplier->clear();
-    ui->listsupplier->clearContents();
-    ui->listsupplier->setRowCount(0);
-    QStringList titles;
-    titles << "Cin" << "Id" << "Name" << "Date" << "Contact " << "Adresse" << "Actions";
-    ui->listsupplier->setHorizontalHeaderLabels(titles);
-
-    while (query.next()) {
-        ui->listsupplier->insertRow(row);
-        ui->listsupplier->setItem(row, 0, new QTableWidgetItem(query.value(0).toString())); // cin
-        ui->listsupplier->setItem(row, 1, new QTableWidgetItem(query.value(1).toString())); // id
-        ui->listsupplier->setItem(row, 2, new QTableWidgetItem(query.value(2).toString())); // name
-        ui->listsupplier->setItem(row, 3, new QTableWidgetItem(query.value(3).toDate().toString("yyyy-MM-dd"))); // date
-        ui->listsupplier->setItem(row, 4, new QTableWidgetItem(query.value(4).toString())); // contact
-        ui->listsupplier->setItem(row, 5, new QTableWidgetItem(query.value(5).toString())); // adresse
-
-        QPushButton* updateButton = new QPushButton();
-        updateButton->setIcon(QIcon(":/Resources/img/reload.png"));
-
-        QPushButton* deleteButton = new QPushButton();
-        deleteButton->setIcon(QIcon(":/Resources/img/delete.png"));
-        deleteButton->setStyleSheet("background-color:#ff3333");
-
-        QWidget* cellAction = new QWidget();
-        QHBoxLayout* layout = new QHBoxLayout(cellAction);
-        layout->addWidget(updateButton);
-        layout->addWidget(deleteButton);
-        layout->setContentsMargins(0, 0, 0, 0);
-        layout->setSpacing(5);
-        ui->listsupplier->setCellWidget(row, 6, cellAction);
-
-        QObject::connect(deleteButton, &QPushButton::clicked, [=]() {
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(this, "Confirm Deletion",
-                                          "Are you sure you want to delete this supplier?", QMessageBox::Yes | QMessageBox::No);
-            if (reply != QMessageBox::Yes) {
-                return;
-            }
-
-            connectToDatabase();
-            if (!db.open()) {
-                qDebug() << "Error, unable to connect to database";
-                qDebug() << db.lastError().text();
-                return;
-            }
-
-            QSqlQuery deleteQuery(db);
-            deleteQuery.prepare("DELETE FROM supplier WHERE id = :id");
-            deleteQuery.bindValue(":id", ui->listsupplier->item(row, 1)->text().toInt());
-
-            QMessageBox msb;
-            msb.setWindowTitle("Delete Supplier State");
-            if (!deleteQuery.exec()) {
-                msb.setText("Error deleting supplier: " + deleteQuery.lastError().text());
-            } else {
-                msb.setText("Supplier has been deleted successfully.");
-                getSupplier();
-            }
-            db.close();
-            msb.exec();
-        });
-
-        QObject::connect(updateButton, &QPushButton::clicked, [=]() {
-            if (!db.isOpen())
-                connectToDatabase();
-
-            if (!db.open()) {
-                qDebug() << "Error, unable to connect to database";
-                qDebug() << db.lastError().text();
-                return;
-            }
-
-            QSqlQuery updateQuery(db);
-            QDate tdate = QDate::fromString(ui->listsupplier->item(row, 3)->text(), "yyyy-MM-dd");
-            if (!tdate.isValid()) {
-                qDebug() << "Invalid date format";
-                return;
-            }
-            QString formattedDate = tdate.toString("yyyy-MM-dd");
-
-            updateQuery.prepare("insert into transactions values (:cin,:idsupplier,:fullname,"+formattedDate+",:contact,:adresse)");
-            updateQuery.bindValue(":cin", ui->listsupplier->item(row, 0)->text().toInt());
-            updateQuery.bindValue(":id", ui->listsupplier->item(row, 1)->text().toInt());
-            updateQuery.bindValue(":date", formattedDate);
-            updateQuery.bindValue(":name", ui->listsupplier->item(row, 2)->text());
-            updateQuery.bindValue(":contact", ui->listsupplier->item(row, 4)->text());
-            updateQuery.bindValue(":adresse", ui->listsupplier->item(row, 5)->text());
-
-            QMessageBox msb;
-            msb.setWindowTitle("Update Supplier State");
-
-            if (!updateQuery.exec()) {
-                msb.setText("Error updating supplier: " + updateQuery.lastError().text());
-            } else {
-                msb.setText("Supplier has been updated successfully.");
-                getSupplier();
-            }
-            db.close();
-            msb.exec();
-        });
-
-        row++;
-    }
-}
-
-void MainWindow::on_add_supplier_clicked()
+void MainWindow::on_pushButton_clicked()
 {
-    if (!db.isOpen())
-        connectToDatabase();
-    if (!db.open()) {
-        qDebug() << "Error, unable to connect to database";
-        qDebug() << db.lastError().text();
+    // Validate input fields
+    if (ui->le_id->text().isEmpty() || ui->le_date->text().isEmpty() ||
+        ui->le_montant->text().isEmpty() || ui->le_status->text().isEmpty() ||
+        ui->le_quantite->text().isEmpty() || ui->le_date_expiration->text().isEmpty() ||
+        ui->le_prix->text().isEmpty()) {
+        QMessageBox::warning(this, "Input Error", "Please fill in all fields.");
+        return; // Exit if any field is empty
+
+    }
+
+    // Retrieve input values
+    int id = ui->le_id->text().toInt();
+    QString date = ui->le_date->text();
+    float montant = ui->le_montant->text().toFloat();
+    QString status = ui->le_status->text();
+    int quantite = ui->le_quantite->text().toInt();
+    QString date_expiration = ui->le_date_expiration->text();
+    float prix = ui->le_prix->text().toFloat();
+
+    // Create a Product object with the data
+    Product product(id, date, montant, status, quantite, date_expiration, prix);
+    bool test = product.ajouter(); // Call the ajouter function
+
+    if (test)
+    {
+        QMessageBox::information(this, QObject::tr("Success"),
+                    QObject::tr("Addition successful.\n"
+                                "Click Cancel to exit."), QMessageBox::Cancel);
+        ui->oui->setModel(product.afficher()); // Refresh the table view
+    }
+    else
+    {
+        QMessageBox::critical(this, QObject::tr("Addition Failed"),
+                    QObject::tr("Addition not performed.\n"
+                                "Click Cancel to exit."), QMessageBox::Cancel);
+    }
+}
+
+void MainWindow::on_sup_clicked()
+{
+    // Get the ID from the line edit for deletion
+    int id = ui->le_sup->text().toInt();
+
+    // Assuming 'product' is the Product object responsible for managing products
+    bool test = product.supprimer(id); // Call the supprimer function
+
+    if(test)
+    {
+        ui->oui->setModel(product.afficher()); // Refresh the table view
+        QMessageBox::information(this, QObject::tr("Success"),
+                    QObject::tr("Suppression effectuée.\n"
+                                "Click Cancel to exit."), QMessageBox::Cancel);
+    }
+    else
+    {
+        QMessageBox::critical(this, QObject::tr("Error"),
+                    QObject::tr("Suppression non effectuée.\n"
+                                "Click Cancel to exit."), QMessageBox::Cancel);
+    }
+}
+
+void MainWindow::on_non_clicked()
+{
+    // Get the ID from the search field
+    QString productId = ui->le_search->text();
+
+    // Verify that the ID is not empty
+    if (productId.isEmpty()) {
+        QMessageBox::warning(this, "Modification", "Veuillez entrer un ID de produit valide dans le champ de recherche.");
         return;
     }
 
-    if (ui->cin->text().isEmpty() ||
-        ui->id->text().isEmpty() ||
-        ui->name->text().isEmpty() ||
-        ui->date->text().isEmpty() ||
-        ui->contact->text().isEmpty() ||
-        ui->adr->text().isEmpty()) {
-        QMessageBox::warning(this, "Input Error", "Please fill in all fields before adding a supplier.");
+    // Retrieve new values from input fields
+    QString newDate = ui->le_date_2->text();
+    float newMontant = ui->le_montant_2->text().toFloat();
+    QString newStatus = ui->le_status_2->text();
+    int newQuantite = ui->le_quantite_2->text().toInt();
+    QString newDateExpiration = ui->le_date_expiration_3->text();
+    float newPrix = ui->le_prix_2->text().toFloat();
+
+    // Check that fields are not empty
+    if (newDate.isEmpty() || newStatus.isEmpty() || newDateExpiration.isEmpty() ||
+        ui->le_montant_2->text().isEmpty() || ui->le_quantite_2->text().isEmpty() || ui->le_prix_2->text().isEmpty()) {
+        QMessageBox::warning(this, "Modification", "Tous les champs doivent être remplis.");
         return;
     }
 
-    QSqlQuery query(db);
-    query.prepare("INSERT INTO supplier (cin, idsupplier, fullname, hiredate, contact, adresse) VALUES (:cin, :id, :name, TO_DATE(:hiredate, 'YYYY-MM-DD'), :contact, :adr)");
+    // Prepare the query to update the product in the database
+    QSqlQuery query;
+    query.prepare("UPDATE product SET DATE_COMM = :date, MONTANT_TOTAL = :montant, status = :status, "
+                  "QUANTITE = :quantite, DATE_EXPIRATION = :date_expiration, PRIX = :prix WHERE id_pro = :id");
+    query.bindValue(":date", newDate);
+    query.bindValue(":montant", newMontant);
+    query.bindValue(":status", newStatus);
+    query.bindValue(":quantite", newQuantite);
+    query.bindValue(":date_expiration", newDateExpiration);
+    query.bindValue(":prix", newPrix);
+    query.bindValue(":id", productId);
 
-
-    query.bindValue(":cin", ui->cin->text().toInt());
-    query.bindValue(":id", ui->id->text().toInt());
-    query.bindValue(":name", ui->name->text());
-    query.bindValue(":date", ui->date->text());
-    query.bindValue(":contact", ui->contact->text());
-    query.bindValue(":adr", ui->adr->text());
-
-    QMessageBox msb;
-    msb.setWindowTitle("Add Supplier");
-
-    if (!query.exec()) {
-        msb.setText("Error adding supplier: " + query.lastError().text());
+    if (query.exec()) {
+        if (query.numRowsAffected() > 0) {
+            QMessageBox::information(this, "Modification", "Le produit a été modifié avec succès.");
+            ui->oui->setModel(product.afficher()); // Refresh the table view
+        } else {
+            QMessageBox::information(this, "Modification", "Aucun produit trouvé avec cet ID. Vérifiez l'ID.");
+        }
     } else {
-        msb.setText("Supplier has been added successfully.");
-        ui->date_search->setText("");
-        ui->date_search->setPlaceholderText("Search Date");
-        getSupplier();
+        QMessageBox::critical(this, "Erreur", "Échec de la modification dans la base de données : " + query.lastError().text());
     }
-    msb.exec();
+}
+
+void MainWindow::on_search_clicked()
+{
+    // Retrieve the ID from the search field
+    QString searchTerm = ui->le_search->text();
+
+    // Check if the field is empty
+    if (searchTerm.isEmpty()) {
+        QMessageBox::warning(this, "Recherche", "Veuillez entrer un ID.");
+        return;
+    }
+
+    // Prepare SQL query to search for the product
+    QSqlQuery query;
+    query.prepare("SELECT DATE_COMM, MONTANT_TOTAL, STATUS, QUANTITE, DATE_EXPIRATION, PRIX FROM product WHERE id_pro = :id");
+    query.bindValue(":id", searchTerm);
+
+    if (query.exec()) {
+        if (query.next()) {
+            // If the product is found, populate the fields
+            ui->le_date_2->setText(query.value(0).toString());
+            ui->le_montant_2->setText(query.value(1).toString());
+            ui->le_status_2->setText(query.value(2).toString());
+            ui->le_quantite_2->setText(query.value(3).toString());
+            ui->le_date_expiration_3->setText(query.value(4).toString());
+            ui->le_prix_2->setText(query.value(5).toString());
+        } else {
+            QMessageBox::information(this, "Recherche", "Aucun produit trouvé avec cet ID.");
+        }
+    } else {
+        QMessageBox::critical(this, "Erreur", "Échec de la recherche dans la base de données : " + query.lastError().text());
+    }
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    ui->oui->setModel(product.afficher()); // Refresh the table view
+}
+void MainWindow::on_generatePdfButton_clicked()
+{
+    // Open a file dialog to select the save location and filename
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save PDF"), "", tr("PDF Files (*.pdf);;All Files (*)"));
+
+    // Check if the user canceled the file dialog
+    if (fileName.isEmpty()) {
+        return;
+    }
+
+    // Create a PDF writer object
+    QPdfWriter pdfWriter(fileName);
+    pdfWriter.setPageSize(QPageSize(QPageSize::A4));
+    pdfWriter.setResolution(300);
+
+    // Create a QPainter to draw on the PDF
+    QPainter painter(&pdfWriter);
+
+    // Set font for the PDF
+    QFont font("Arial", 12);
+    painter.setFont(font);
+
+    // Draw title
+    painter.drawText(100, 100, "Product List");
+
+    int yOffset = 150; // Initial y position for the data
+    int i = 1;
+
+    // Create a query to fetch product data
+    QSqlQuery query("SELECT id_pro, date_comm, montant_total, status, quantite, date_expiration, prix FROM product");
+
+    // Iterate over each product and print details in the specified format
+    while (query.next()) {
+        // Print each product's data in a structured format
+        painter.drawText(50, yOffset, "Product " + QString::number(i) + ":");
+        i++;  // Increment the product count
+        yOffset += 60;
+        painter.drawText(100, yOffset, "ID: " + query.value("id_pro").toString());
+        yOffset += 60;
+        painter.drawText(100, yOffset, "Date: " + query.value("date_comm").toString());
+        yOffset += 60;
+        painter.drawText(100, yOffset, "Amount: " + query.value("montant_total").toString());
+        yOffset += 60;
+        painter.drawText(100, yOffset, "Status: " + query.value("status").toString());
+        yOffset += 60;
+        painter.drawText(100, yOffset, "Quantity: " + query.value("quantite").toString());
+        yOffset += 60;
+        painter.drawText(100, yOffset, "Expiration Date: " + query.value("date_expiration").toString());
+        yOffset += 60;
+        painter.drawText(100, yOffset, "Price: " + query.value("prix").toString());
+
+        // Add some space between products
+        yOffset += 100;
+
+        // Check if yOffset goes beyond the page size and create a new page if necessary
+        if (yOffset > pdfWriter.height() - 100) {
+            pdfWriter.newPage();
+            yOffset = 150; // Reset yOffset to start from the top of the new page
+        }
+    }
+
+    // Finalize the PDF
+    painter.end();
+
+    // Optionally, show a message box to confirm PDF creation
+    QMessageBox::information(this, tr("PDF Generated"), tr("The product data has been saved as a PDF."));
 }
