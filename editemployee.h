@@ -18,11 +18,16 @@ public:
 
     // Method to set employee data in the dialog's fields
     void setEmployeeData(const QString &cin, const QString &id, const QString &fullName, const QDate &hireDate,
-                         const QString &role, double salary, const QString &email, int age,
+                         const QString &role, double salary, const QString &email, const QDate &dateOfBirth,  // Updated: replaced int age with QDate dateOfBirth
                          const QString &gender, const QString &phone);
 
-    // Method to update the employee in the database
+    // Methods to handle employee updates
+    bool validateInputs();
     bool updateEmployeeInDatabase();
+
+public slots:
+    void onOkButtonClicked();
+    void onCancelButtonClicked();
 
 private:
     Ui::EditEmployee *ui;

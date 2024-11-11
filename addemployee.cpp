@@ -6,6 +6,7 @@
 #include <QRegularExpressionValidator>
 #include <QRegularExpression>
 #include <QDate>
+#include <QDebug>  // For debugging
 
 AddEmployee::AddEmployee(QWidget *parent) :
     QDialog(parent),
@@ -22,6 +23,11 @@ AddEmployee::AddEmployee(QWidget *parent) :
     QRegularExpression emailRegEx("[\\w\\.]+@[\\w\\.]+\\.[a-zA-Z]{2,}");
     QValidator *emailValidator = new QRegularExpressionValidator(emailRegEx, this);
     ui->emailLineEdit->setValidator(emailValidator);
+
+    generateEmployeeId();
+
+    connect(ui->okbutton, &QPushButton::clicked, this, &AddEmployee::onOkButtonClicked);
+    connect(ui->cancelbutton, &QPushButton::clicked, this, &AddEmployee::reject);
 }
 
 AddEmployee::~AddEmployee()
@@ -34,10 +40,10 @@ QString AddEmployee::getCin() const { return ui->cinLineEdit->text(); }
 QString AddEmployee::getIdEmployee() const { return ui->idEmployeeLineEdit->text(); }
 QString AddEmployee::getFullName() const { return ui->fullNameLineEdit->text(); }
 QDate AddEmployee::getHireDate() const { return ui->hireDateEdit->date(); }
-QString AddEmployee::getRole() const { return ui->roleLineEdit->text(); }
+QString AddEmployee::getRole() const { return ui->roleCombobox->currentText(); }  // Get role from the combobox
 double AddEmployee::getSalary() const { return ui->salaryLineEdit->text().toDouble(); }
 QString AddEmployee::getEmail() const { return ui->emailLineEdit->text(); }
-int AddEmployee::getAge() const { return ui->ageLineEdit->text().toInt(); }
+QDate AddEmployee::getDateOfBirth() const { return ui->birthdaydateedit->date(); }
 QString AddEmployee::getGender() const { return ui->genderCombobox->currentText(); }
 QString AddEmployee::getPhone() const { return ui->phoneLineEdit->text(); }
 
@@ -45,7 +51,6 @@ QString AddEmployee::getPhone() const { return ui->phoneLineEdit->text(); }
 bool AddEmployee::isUnique(const QString &field, const QString &value, bool caseInsensitive) {
     QSqlQuery query;
 
-    // Use case-insensitive comparison for IDEMP and EMAIL
     if (caseInsensitive) {
         query.prepare(QString("SELECT COUNT(*) FROM EMPLOYEE WHERE LOWER(%1) = LOWER(:value)").arg(field));
     } else {
@@ -61,85 +66,105 @@ bool AddEmployee::isUnique(const QString &field, const QString &value, bool case
 
 // Function to add employee to database with validation
 bool AddEmployee::addEmployeeToDatabase() {
+    QStringList errorMessages;
+
     // Validate CIN
     if (getCin().length() != 8 || !getCin().toUInt()) {
-        QMessageBox::warning(this, "Validation Error", "CIN must be an 8-digit number.");
-        return false;
+        errorMessages.append("CIN must be an 8-digit number.");
     }
 
-    // Validate phone number length (must be 8 digits)
+    // Validate phone number length
     if (getPhone().length() != 8 || !getPhone().toUInt()) {
-        QMessageBox::warning(this, "Validation Error", "Phone must be an 8-digit number.");
-        return false;
+        errorMessages.append("Phone must be an 8-digit number.");
     }
 
-    // Check if CIN is unique
+    // Check uniqueness of CIN
     if (!isUnique("CINEMP", getCin(), false)) {
-        QMessageBox::warning(this, "Validation Error", "CIN must be unique.");
-        return false;
+        errorMessages.append("CIN must be unique.");
     }
 
-    // Check if ID Employee is unique (case-insensitive)
+    // Check if ID Employee is unique
     if (getIdEmployee().isEmpty()) {
-        QMessageBox::warning(this, "Validation Error", "ID Employee cannot be empty.");
-        return false;
+        errorMessages.append("ID Employee cannot be empty.");
+    } else if (!isUnique("IDEMP", getIdEmployee(), true)) {
+        errorMessages.append("ID Employee must be unique (case-insensitive).");
     }
 
-    if (!isUnique("IDEMP", getIdEmployee(), true)) {
-        QMessageBox::warning(this, "Validation Error", "ID Employee must be unique (case-insensitive).");
-        return false;
-    }
-
-    // Check if Phone is unique
+    // Check uniqueness of phone
     if (!isUnique("PHONE", getPhone(), false)) {
-        QMessageBox::warning(this, "Validation Error", "Phone number must be unique.");
-        return false;
+        errorMessages.append("Phone number must be unique.");
     }
 
-    // Validate hire date (must be before today)
+    // Validate hire date
     if (getHireDate() >= QDate::currentDate()) {
-        QMessageBox::warning(this, "Validation Error", "Hire date must be earlier than today.");
-        return false;
+        errorMessages.append("Hire date must be earlier than today.");
     }
 
     // Validate email format
     if (!ui->emailLineEdit->hasAcceptableInput()) {
-        QMessageBox::warning(this, "Validation Error", "Email format is invalid.");
-        return false;
+        errorMessages.append("Email format is invalid.");
     }
 
-    // Check if Email is unique (case-insensitive)
+    // Check uniqueness of email
     if (!isUnique("EMAIL", getEmail(), true)) {
-        QMessageBox::warning(this, "Validation Error", "Email must be unique (case-insensitive).");
-        return false;
+        errorMessages.append("Email must be unique (case-insensitive).");
     }
 
-    // Validate salary (must be a positive number)
+    // Validate salary
     if (getSalary() <= 0) {
-        QMessageBox::warning(this, "Validation Error", "Salary must be a positive number.");
+        errorMessages.append("Salary must be a positive number.");
+    }
+
+    if (!errorMessages.isEmpty()) {
+        QMessageBox::warning(this, "Validation Errors", errorMessages.join("\n"));
         return false;
     }
 
-    // If all validation checks pass, attempt to insert into the database
+    // Insert into the database
     QSqlQuery query;
-    query.prepare("INSERT INTO EMPLOYEE (CINEMP, IDEMP, FULL_NAME, HIRE_DATE, ROLE, SALARY, EMAIL, AGE, GENDER, PHONE) "
-                  "VALUES (:cinemp, :idemp, :full_name, :hire_date, :role, :salary, :email, :age, :gender, :phone)");
+    query.prepare("INSERT INTO EMPLOYEE (CINEMP, IDEMP, FULL_NAME, HIRE_DATE, ROLE, SALARY, EMAIL, DATE_OF_BIRTH, GENDER, PHONE) "
+                  "VALUES (:cinemp, :idemp, :full_name, :hire_date, :role, :salary, :email, :date_of_birth, :gender, :phone)");
     query.bindValue(":cinemp", getCin());
     query.bindValue(":idemp", getIdEmployee());
     query.bindValue(":full_name", getFullName());
     query.bindValue(":hire_date", getHireDate());
-    query.bindValue(":role", getRole());
+    query.bindValue(":role", getRole());  // Get role from combobox
     query.bindValue(":salary", getSalary());
     query.bindValue(":email", getEmail());
-    query.bindValue(":age", getAge());
+    query.bindValue(":date_of_birth", getDateOfBirth());
     query.bindValue(":gender", getGender());
     query.bindValue(":phone", getPhone());
 
     if (query.exec()) {
-        QMessageBox::information(this, "Success", "Employee added successfully.");
         return true;
     } else {
         QMessageBox::warning(this, "Error", "Failed to add employee: " + query.lastError().text());
         return false;
     }
+}
+
+void AddEmployee::onOkButtonClicked() {
+    if (addEmployeeToDatabase()) {
+        accept();
+    }
+}
+
+void AddEmployee::generateEmployeeId()
+{
+    QSqlQuery query;
+
+    if (query.exec("SELECT IDEMP FROM EMPLOYEE WHERE ROWNUM = 1 ORDER BY IDEMP DESC")) {
+        if (query.next()) {
+            QString lastId = query.value(0).toString();  // e.g., "EMP0005"
+            QString numericPart = lastId.mid(3);         // Extract "0005"
+            int nextIdNumber = numericPart.toInt() + 1;
+            ui->idEmployeeLineEdit->setText(QString("EMP%1").arg(nextIdNumber, 4, 10, QChar('0')));
+        } else {
+            ui->idEmployeeLineEdit->setText("EMP0001");
+        }
+    } else {
+        ui->idEmployeeLineEdit->setText("EMP0001");
+    }
+
+    ui->idEmployeeLineEdit->setReadOnly(true);
 }

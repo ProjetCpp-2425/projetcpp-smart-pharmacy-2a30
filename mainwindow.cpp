@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "addemployee.h"
 #include "editemployee.h"
+#include "employee.h"  // Include Employee for the calculateAge function
 #include <QSqlError>
 #include <QMessageBox>
 #include <QDebug>
@@ -11,6 +12,7 @@
 #include <QSqlQueryModel>
 #include <QSqlQuery>
 #include <QVariant>
+#include <QStandardItemModel>
 // Constructor
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -28,7 +30,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->editButton, &QPushButton::clicked, this, &MainWindow::on_editButton_clicked);
     connect(ui->sortButton, &QPushButton::clicked, this, &MainWindow::onSortButtonClicked);
     connect(ui->generatePdfButton, &QPushButton::clicked, this, &MainWindow::generatePdf);
-
 }
 
 // Destructor
@@ -40,106 +41,105 @@ MainWindow::~MainWindow()
 // Function to load employee data from the database
 void MainWindow::loadEmployeeData()
 {
-    // Create a new QSqlQueryModel
-    QSqlQueryModel *model = new QSqlQueryModel(this);
+    QSqlQuery query;
+    query.prepare("SELECT CINEMP, IDEMP, FULL_NAME, HIRE_DATE, ROLE, SALARY, EMAIL, DATE_OF_BIRTH, GENDER, PHONE FROM EMPLOYEE");
 
-    // Set the SQL query to fetch employee data
-    model->setQuery("SELECT CINEMP, IDEMP, FULL_NAME, HIRE_DATE, ROLE, SALARY, EMAIL, AGE, GENDER, PHONE FROM EMPLOYEE");
-
-    // Check if there was an error in the query
-    if (model->lastError().isValid()) {
-        qDebug() << "Error loading data from database: " << model->lastError().text();
+    if (!query.exec()) {
+        qDebug() << "Error loading data from database: " << query.lastError().text();
         return;
     }
 
-    // Set the model to the QTableView to display the data
-    ui->tableView->setModel(model);
+    QStandardItemModel *model = new QStandardItemModel(this);
+    model->setHorizontalHeaderLabels({"CINEMP", "IDEMP", "FULL NAME", "HIRE DATE", "ROLE", "SALARY", "EMAIL", "AGE", "GENDER", "PHONE"});
 
-    // Resize the columns to fit the data
+    while (query.next()) {
+        QList<QStandardItem *> rowItems;
+        rowItems << new QStandardItem(query.value("CINEMP").toString());
+        rowItems << new QStandardItem(query.value("IDEMP").toString());
+        rowItems << new QStandardItem(query.value("FULL_NAME").toString());
+        rowItems << new QStandardItem(query.value("HIRE_DATE").toDate().toString("yyyy-MM-dd"));
+        rowItems << new QStandardItem(query.value("ROLE").toString());
+        rowItems << new QStandardItem(QString::number(query.value("SALARY").toDouble(), 'f', 2));
+        rowItems << new QStandardItem(query.value("EMAIL").toString());
+        QString dateOfBirthStr = query.value("DATE_OF_BIRTH").toDate().toString("yyyy-MM-dd");
+        QDate dateOfBirth = QDate::fromString(dateOfBirthStr, "yyyy-MM-dd");
+        int age = Employee::calculateAge(dateOfBirth);
+        rowItems << new QStandardItem(QString::number(age));
+        rowItems << new QStandardItem(query.value("GENDER").toString());
+        rowItems << new QStandardItem(query.value("PHONE").toString());
+
+        model->appendRow(rowItems);
+    }
+
+    ui->tableView->setModel(model);
     ui->tableView->resizeColumnsToContents();
 }
-// Slot to open the AddEmployeeDialog when the Add button is clicked
+
+// Slot to open the AddEmployee dialog
 void MainWindow::on_addButton_clicked()
 {
-    // Create and open the AddEmployeeDialog
     AddEmployee addEmployeeDialog(this);
-
     if (addEmployeeDialog.exec() == QDialog::Accepted) {
-        // If dialog was accepted, add the employee to the database
-        addEmployeeDialog.addEmployeeToDatabase();
-
-        // Reload the employee data to show the new entry
-        loadEmployeeData();
+        loadEmployeeData();  // Reload data after addition
     }
 }
 
-// Slot to handle removing an employee
+// Slot to remove an employee
 void MainWindow::on_removeButton_clicked()
 {
-    // Get the selected row from the table
     QModelIndexList selectedRows = ui->tableView->selectionModel()->selectedRows();
-
-    if (selectedRows.size() > 0) {
-        int row = selectedRows[0].row();
-        QString cinemp = ui->tableView->model()->index(row, 0).data().toString();  // Get the CINEMP of the selected employee
-
-        // Create an SQL query to remove the selected employee by CINEMP
-        QSqlQuery query;
-        query.prepare("DELETE FROM EMPLOYEE WHERE CINEMP = :cinemp");
-        query.bindValue(":cinemp", cinemp);
-
-        // Execute the query and check if it was successful
-        if (query.exec()) {
-            QMessageBox::information(this, "Success", "Employee removed successfully.");
-            loadEmployeeData();  // Reload the employee data after removing
-        } else {
-            QMessageBox::warning(this, "Error", "Failed to remove employee: " + query.lastError().text());
-        }
-    } else {
+    if (selectedRows.isEmpty()) {
         QMessageBox::warning(this, "Error", "No employee selected for removal.");
+        return;
+    }
+
+    QString cinemp = ui->tableView->model()->index(selectedRows[0].row(), 0).data().toString();
+    QSqlQuery query;
+    query.prepare("DELETE FROM EMPLOYEE WHERE CINEMP = :cinemp");
+    query.bindValue(":cinemp", cinemp);
+
+    if (query.exec()) {
+        QMessageBox::information(this, "Success", "Employee removed successfully.");
+        loadEmployeeData();
+    } else {
+        QMessageBox::warning(this, "Error", "Failed to remove employee: " + query.lastError().text());
     }
 }
+
+// Slot to edit an employee
 void MainWindow::on_editButton_clicked()
 {
-    // Get the selected row from the table
     QModelIndexList selectedRows = ui->tableView->selectionModel()->selectedRows();
+    if (selectedRows.isEmpty()) {
+        QMessageBox::warning(this, "Error", "No employee selected for editing.");
+        return;
+    }
 
-    if (selectedRows.size() > 0) {
-        int row = selectedRows[0].row();
-        QString cinemp = ui->tableView->model()->index(row, 0).data().toString();  // Get the CINEMP of the selected employee
+    QString cinemp = ui->tableView->model()->index(selectedRows[0].row(), 0).data().toString();
+    QSqlQuery query;
+    query.prepare("SELECT * FROM EMPLOYEE WHERE CINEMP = :cinemp");
+    query.bindValue(":cinemp", cinemp);
 
-        // Fetch the selected employee's data from the database
-        QSqlQuery query;
-        query.prepare("SELECT * FROM EMPLOYEE WHERE CINEMP = :cinemp");
-        query.bindValue(":cinemp", cinemp);
+    if (query.exec() && query.next()) {
+        EditEmployee editEmployeeDialog(this);
+        editEmployeeDialog.setEmployeeData(
+            query.value("CINEMP").toString(),
+            query.value("IDEMP").toString(),
+            query.value("FULL_NAME").toString(),
+            query.value("HIRE_DATE").toDate(),
+            query.value("ROLE").toString(),
+            query.value("SALARY").toDouble(),
+            query.value("EMAIL").toString(),
+            query.value("DATE_OF_BIRTH").toDate(),
+            query.value("GENDER").toString(),
+            query.value("PHONE").toString()
+        );
 
-        if (query.exec() && query.next()) {
-            // Pass the employee data to the EditEmployeeDialog
-            EditEmployee editEmployeeDialog(this);
-
-            editEmployeeDialog.setEmployeeData(query.value("CINEMP").toString(),
-                                               query.value("IDEMP").toString(),
-                                               query.value("FULL_NAME").toString(),
-                                               query.value("HIRE_DATE").toDate(),
-                                               query.value("ROLE").toString(),
-                                               query.value("SALARY").toDouble(),
-                                               query.value("EMAIL").toString(),
-                                               query.value("AGE").toInt(),
-                                               query.value("GENDER").toString(),
-                                               query.value("PHONE").toString());
-
-            if (editEmployeeDialog.exec() == QDialog::Accepted) {
-                // If dialog was accepted, update the employee in the database
-                editEmployeeDialog.updateEmployeeInDatabase();
-
-                // Reload the employee data to reflect the changes
-                loadEmployeeData();
-            }
-        } else {
-            QMessageBox::warning(this, "Error", "Failed to retrieve employee data: " + query.lastError().text());
+        if (editEmployeeDialog.exec() == QDialog::Accepted) {
+            loadEmployeeData();  // Reload data after editing
         }
     } else {
-        QMessageBox::warning(this, "Error", "No employee selected for editing.");
+        QMessageBox::warning(this, "Error", "Failed to retrieve employee data: " + query.lastError().text());
     }
 }
 void MainWindow::onSortButtonClicked()

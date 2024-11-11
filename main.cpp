@@ -5,12 +5,13 @@
 #include <QApplication>
 #include "mainwindow.h"
 #include "connection.h"
+#include "login.h"  // Include the Login dialog
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    // Make sure the QODBC driver is loaded
+    // Ensure QODBC driver is loaded
     if (!QSqlDatabase::isDriverAvailable("QODBC")) {
         qDebug() << "Error: QODBC driver not available!";
         return -1;
@@ -18,9 +19,15 @@ int main(int argc, char *argv[])
 
     Connection c;
     if (c.createconnect()) {
-        MainWindow w;
-        w.show();
-        return a.exec();
+        Login loginDialog;  // Show the login dialog first
+        if (loginDialog.exec() == QDialog::Accepted) {  // Check if login was successful
+            MainWindow w;
+            w.show();
+            return a.exec();
+        } else {
+            qDebug() << "Login failed or canceled.";
+            return 0;  // Exit if login is canceled or fails
+        }
     } else {
         qDebug() << "Database connection failed.";
         return -1;

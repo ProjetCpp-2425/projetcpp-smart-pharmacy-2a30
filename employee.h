@@ -10,9 +10,9 @@ class Employee {
 public:
     // Default constructor
     Employee();
-
+    static int calculateAge(const QDate &dateOfBirth);
     // Parameterized constructor
-    Employee(int cinemp, QString idemp, QString fullName, QDate hireDate, QString role, double salary, QString email, int age, QString gender, int phone);
+    Employee(int cinemp, QString idemp, QString fullName, QDate hireDate, QString role, double salary, QString email, QDate dateOfBirth, QString gender, int phone);
 
     // Getters
     int getCinEmp();
@@ -22,11 +22,10 @@ public:
     QString getRole();
     double getSalary();
     QString getEmail();
-    int getAge();
+    QDate getDateOfBirth();  // Getter for date of birth
     QString getGender();
     int getPhone();
     QSqlQueryModel* sortEmployees(QString criterion);
-
     // Setters
     void setCinEmp(int cinemp);
     void setIdEmp(QString idemp);
@@ -35,9 +34,12 @@ public:
     void setRole(QString role);
     void setSalary(double salary);
     void setEmail(QString email);
-    void setAge(int age);
+    void setDateOfBirth(QDate dateOfBirth);  // Setter for date of birth
     void setGender(QString gender);
     void setPhone(int phone);
+
+    // Calculates age based on date of birth
+    int calculateAge() const;
 
     // Database operations
     bool addEmployee();
@@ -53,7 +55,7 @@ private:
     QString role;            // ROLE: Employee's role
     double salary;           // SALARY: Employee's salary
     QString email;           // EMAIL: Employee's email
-    int age;                 // AGE: Employee's age
+    QDate date_of_birth;     // DATE_OF_BIRTH: Employee's date of birth
     QString gender;          // GENDER: Employee's gender
     int phone;               // PHONE: Employee's phone number
 };

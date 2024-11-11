@@ -13,6 +13,7 @@ SOURCES += \
     connection.cpp \
     editemployee.cpp \
     employee.cpp \
+    login.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -21,11 +22,13 @@ HEADERS += \
     connection.h \
     editemployee.h \
     employee.h \
+    login.h \
     mainwindow.h
 
 FORMS += \
     addemployee.ui \
     editemployee.ui \
+    login.ui \
     mainwindow.ui
 
 # Default rules for deployment.
