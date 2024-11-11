@@ -32,6 +32,7 @@ Login::Login(QWidget *parent) :
     connect(ui->cancel, &QPushButton::clicked, this, &Login::on_cancel_clicked);
     connect(ui->forget, &QPushButton::clicked, this, &Login::on_forget_clicked);
     connect(ui->cancel_2, &QPushButton::clicked, this, &Login::on_cancelForget_clicked);
+    connect(ui->cancellogin, &QPushButton::clicked, this, &Login::exitApplication);
 
     // Forget password connections
     connect(ui->ok_2, &QPushButton::clicked, this, [this]() {
@@ -246,4 +247,9 @@ bool Login::authenticateUser(const QString &cin, const QString &password)
         return query.value(0).toInt() > 0;
     }
     return false;
+}
+void Login::exitApplication()
+{
+    qDebug() << "Exit button clicked. Exiting application...";
+    QCoreApplication::exit(0);
 }

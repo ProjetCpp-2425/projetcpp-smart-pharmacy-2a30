@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="login">
     <widget class="QToolButton" name="toolButton">
@@ -296,7 +296,7 @@ QPushButton:disabled {
 </string>
      </property>
      <property name="text">
-      <string>CANCEL</string>
+      <string>EXIT</string>
      </property>
     </widget>
     <widget class="QPushButton" name="forget">
@@ -463,6 +463,34 @@ QCheckBox:disabled {
      </property>
      <property name="text">
       <string>Show Password</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="title">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>10</y>
+       <width>71</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLabel Styling */
+QLabel {
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-style: solid;
+    border-color: #00ff00;  /* Green border */
+    padding: 5px;  /* Padding around the label */
+    margin: 3px;  /* Margin around the label */
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>LOGIN</string>
      </property>
     </widget>
    </widget>
@@ -725,6 +753,34 @@ QPushButton:disabled {
      </property>
      <property name="text">
       <string>CANCEL</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="title2">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>10</y>
+       <width>81</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLabel Styling */
+QLabel {
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-style: solid;
+    border-color: #00ff00;  /* Green border */
+    padding: 5px;  /* Padding around the label */
+    margin: 3px;  /* Margin around the label */
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>Register</string>
      </property>
     </widget>
    </widget>
@@ -1112,6 +1168,34 @@ QCheckBox:disabled {
      </property>
      <property name="text">
       <string>Show Password</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="title3">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>20</y>
+       <width>131</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLabel Styling */
+QLabel {
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-style: solid;
+    border-color: #00ff00;  /* Green border */
+    padding: 5px;  /* Padding around the label */
+    margin: 3px;  /* Margin around the label */
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>Reset Password</string>
      </property>
     </widget>
    </widget>

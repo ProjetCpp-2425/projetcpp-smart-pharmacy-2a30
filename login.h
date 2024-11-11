@@ -29,6 +29,7 @@ private slots:
     void sendVerificationCode(const QString &phone);
     void verifyCodeAndEnablePasswordReset();
     void resetPassword();
+    void exitApplication();
 
 private:
     Ui::Login *ui;
