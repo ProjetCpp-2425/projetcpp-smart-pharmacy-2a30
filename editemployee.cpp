@@ -10,7 +10,7 @@ EditEmployee::EditEmployee(QWidget *parent) :
     ui(new Ui::EditEmployee)
 {
     ui->setupUi(this);
-
+    this->setWindowTitle("EDIT Employee ;)");
     connect(ui->okbutton, &QPushButton::clicked, this, &EditEmployee::onOkButtonClicked);
     connect(ui->cancelbutton, &QPushButton::clicked, this, &EditEmployee::onCancelButtonClicked);
 }

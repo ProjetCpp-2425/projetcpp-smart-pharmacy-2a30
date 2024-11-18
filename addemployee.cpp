@@ -13,7 +13,7 @@ AddEmployee::AddEmployee(QWidget *parent) :
     ui(new Ui::AddEmployee)
 {
     ui->setupUi(this);
-
+    this->setWindowTitle("ADD Employee ;)");
     QRegularExpression cinRegEx("\\d{8}");
     QValidator *cinValidator = new QRegularExpressionValidator(cinRegEx, this);
     ui->cinLineEdit->setValidator(cinValidator);
@@ -153,17 +153,24 @@ void AddEmployee::generateEmployeeId()
 {
     QSqlQuery query;
 
-    if (query.exec("SELECT IDEMP FROM EMPLOYEE WHERE ROWNUM = 1 ORDER BY IDEMP DESC")) {
+    // Adjusted query to get the maximum IDEMP
+    if (query.exec("SELECT MAX(IDEMP) FROM EMPLOYEE")) {
         if (query.next()) {
-            QString lastId = query.value(0).toString();  // e.g., "EMP0005"
-            QString numericPart = lastId.mid(3);         // Extract "0005"
-            int nextIdNumber = numericPart.toInt() + 1;
-            ui->idEmployeeLineEdit->setText(QString("EMP%1").arg(nextIdNumber, 4, 10, QChar('0')));
+            QString lastId = query.value(0).toString();  // Get the max IDEMP (e.g., "EMP0005")
+
+            if (!lastId.isEmpty()) {
+                QString numericPart = lastId.mid(3);  // Extract numeric part (e.g., "0005")
+                int nextIdNumber = numericPart.toInt() + 1;
+                ui->idEmployeeLineEdit->setText(QString("EMP%1").arg(nextIdNumber, 4, 10, QChar('0')));
+            } else {
+                ui->idEmployeeLineEdit->setText("EMP0001");  // First ID if no records exist
+            }
         } else {
-            ui->idEmployeeLineEdit->setText("EMP0001");
+            ui->idEmployeeLineEdit->setText("EMP0001");  // No rows, start with EMP0001
         }
     } else {
-        ui->idEmployeeLineEdit->setText("EMP0001");
+        qDebug() << "Query failed: " << query.lastError().text();
+        ui->idEmployeeLineEdit->setText("EMP0001");  // Default in case of query failure
     }
 
     ui->idEmployeeLineEdit->setReadOnly(true);

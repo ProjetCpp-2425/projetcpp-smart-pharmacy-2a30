@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QString>
-#include <QProcess>
+#include <QSqlQuery>
 
 namespace Ui {
 class Login;
@@ -18,27 +18,34 @@ public:
     ~Login();
 
 private slots:
+    // Login and registration functions
     void on_oklogin_clicked();
-    void on_gotoregister_clicked();
     void on_okregister_clicked();
-    void on_showpassword_toggled(bool checked);
-    void on_cancel_clicked();
+    void on_gotoregister_clicked();
+    // Forget password flow
     void on_forget_clicked();
-    void on_cancelForget_clicked();
+    void on_okEmail_clicked();              // Send verification code via email
+    void on_okVerificationCode_clicked();  // Verify entered code
+    void on_okNewPassword_clicked();       // Set the new password
 
-    void sendVerificationCode(const QString &phone);
-    void verifyCodeAndEnablePasswordReset();
-    void resetPassword();
-    void exitApplication();
+    // Cancel and navigation functions
+    void on_cancelForget_clicked();  // Cancel forget password and go back to login
+    void on_cancel_clicked();        // Cancel registration and go back to login
+    void exitApplication();          // Exit the application
+
+    // Show/Hide password toggling
+    void on_showpassword_toggled(bool checked);
 
 private:
     Ui::Login *ui;
 
-    QString verificationCode;  // Add this member variable to store the code
-    QString hashPassword(const QString &password);
-    bool authenticateUser(const QString &cin, const QString &password);
-    bool isCinExists(const QString &cin);
-    bool isPasswordSet(const QString &cin);
+    QString verificationCode;  // Holds the generated verification code
+
+    // Utility functions
+    QString hashPassword(const QString &password);  // Hash the password
+    bool authenticateUser(const QString &cin, const QString &password);  // Validate login credentials
+    bool isCinExists(const QString &cin);           // Check if CIN exists in the database
+    bool isPasswordSet(const QString &cin);         // Check if the user already has a password
 };
 
 #endif // LOGIN_H

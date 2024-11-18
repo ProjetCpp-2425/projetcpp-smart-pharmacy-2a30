@@ -25,25 +25,22 @@ Login::Login(QWidget *parent) :
     ui->forgetuser_2->setEnabled(false);  // Disable verification code input initially
     ui->forgetuser_3->setEnabled(false);  // Disable new password input initially
 
-    // Connect buttons and widgets
+    // Connect buttons to slots
     connect(ui->oklogin, &QPushButton::clicked, this, &Login::on_oklogin_clicked);
     connect(ui->gotoregister, &QPushButton::clicked, this, &Login::on_gotoregister_clicked);
     connect(ui->ok, &QPushButton::clicked, this, &Login::on_okregister_clicked);
-    connect(ui->showpassword, &QCheckBox::toggled, this, &Login::on_showpassword_toggled);
     connect(ui->cancel, &QPushButton::clicked, this, &Login::on_cancel_clicked);
-    connect(ui->forget, &QPushButton::clicked, this, &Login::on_forget_clicked);
     connect(ui->cancel_2, &QPushButton::clicked, this, &Login::on_cancelForget_clicked);
+    connect(ui->forget, &QPushButton::clicked, this, &Login::on_forget_clicked);
     connect(ui->cancellogin, &QPushButton::clicked, this, &Login::exitApplication);
 
-    // Forget password connections
-    connect(ui->ok_2, &QPushButton::clicked, this, [this]() {
-        if (ui->forgetuser_2->isEnabled()) {
-            verifyCodeAndEnablePasswordReset();  // If code input is active, verify the code
-        } else {
-            sendVerificationCode(ui->forgetuser->text());  // Otherwise, send verification code
-        }
-    });
+    // New buttons for the forget password flow
+    connect(ui->ok_email, &QPushButton::clicked, this, &Login::on_okEmail_clicked);
+    connect(ui->ok_verificationcode, &QPushButton::clicked, this, &Login::on_okVerificationCode_clicked);
+    connect(ui->ok_newpassword, &QPushButton::clicked, this, &Login::on_okNewPassword_clicked);
 
+    // Show/hide password toggle
+    connect(ui->showpassword, &QCheckBox::toggled, this, &Login::on_showpassword_toggled);
     connect(ui->showpassword_2, &QCheckBox::toggled, this, [this](bool checked) {
         ui->forgetuser_3->setEchoMode(checked ? QLineEdit::Normal : QLineEdit::Password);
     });
@@ -53,7 +50,12 @@ Login::~Login()
 {
     delete ui;
 }
-
+void Login::on_gotoregister_clicked()
+{
+    // Switch to the register page
+    ui->stackedWidget->setCurrentWidget(ui->register_2);  // Assuming "register_2" is the name of the registration widget
+    this->setWindowTitle("PHARMEASE - Register");         // Update the window title to reflect the current page
+}
 // Handle login
 void Login::on_oklogin_clicked()
 {
@@ -65,12 +67,6 @@ void Login::on_oklogin_clicked()
     } else {
         QMessageBox::warning(this, "Login Failed", "Invalid credentials. Please try again.");
     }
-}
-
-// Switch to register page
-void Login::on_gotoregister_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(ui->register_2);
 }
 
 // Handle registration
@@ -116,28 +112,33 @@ void Login::on_showpassword_toggled(bool checked)
     ui->registerpass->setEchoMode(checked ? QLineEdit::Normal : QLineEdit::Password);
 }
 
+// Cancel and return to login page from forget or register page
 void Login::on_cancelForget_clicked()
 {
-    ui->stackedWidget->setCurrentWidget(ui->login);  // Switch back to login page
+    ui->stackedWidget->setCurrentWidget(ui->login);
+    this->setWindowTitle("PHARMEASE - Login");
 }
 
-// Switch back to login
 void Login::on_cancel_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->login);
+    this->setWindowTitle("PHARMEASE - Login");
 }
 
 // Forget password page
 void Login::on_forget_clicked()
 {
     ui->stackedWidget->setCurrentWidget(ui->forget_2);
+    this->setWindowTitle("PHARMEASE - Forget Password");
 }
 
-// Send verification code via WhatsApp
-void Login::sendVerificationCode(const QString &phone)
+// Send verification code via email
+void Login::on_okEmail_clicked()
 {
-    if (phone.isEmpty()) {
-        QMessageBox::warning(this, "Error", "Phone number cannot be empty.");
+    QString email = ui->forgetuser->text();
+
+    if (email.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Email cannot be empty.");
         return;
     }
 
@@ -146,45 +147,47 @@ void Login::sendVerificationCode(const QString &phone)
 
     QProcess *process = new QProcess(this);
     QString pythonPath = "python";  // Ensure Python is in the PATH or specify the full path
-    QString scriptPath = "E:/2A/projetcpp-smart-pharmacy-2a30/send_whatsapp.py";
+    QString scriptPath = "E:/2A/projetcpp-smart-pharmacy-2a30/send_email.py";  // Path to your script
 
     QStringList arguments;
-    arguments << scriptPath << phone << "Your verification code is: " + verificationCode;
+    arguments << scriptPath << email << "Your verification code is: " + verificationCode;
 
     process->start(pythonPath, arguments);
 
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [=](int exitCode, QProcess::ExitStatus) {
         if (exitCode == 0) {
-            QMessageBox::information(this, "Success", "Verification code sent.");
+            QMessageBox::information(this, "Success", "Verification code sent to your email.");
             ui->forgetuser_2->setEnabled(true);  // Enable verification code input
         } else {
-            QMessageBox::warning(this, "Error", "Failed to send WhatsApp message. Check your setup.");
+            QMessageBox::warning(this, "Error", "Failed to send email. Check your setup.");
         }
         process->deleteLater();
     });
 }
 
-void Login::verifyCodeAndEnablePasswordReset()
+// Verify the entered code
+void Login::on_okVerificationCode_clicked()
 {
-    QString enteredCode = ui->forgetuser_2->text().trimmed();  // Ensure there is no trailing whitespace
+    QString enteredCode = ui->forgetuser_2->text().trimmed();
+
     if (enteredCode.isEmpty()) {
         QMessageBox::warning(this, "Invalid Code", "Verification code cannot be empty.");
         return;
     }
 
     if (enteredCode == verificationCode) {
-        QMessageBox::information(this, "Verified", "Code correct. Set a new password.");
+        QMessageBox::information(this, "Verified", "Verification code valid. Set your new password.");
         ui->forgetuser_3->setEnabled(true);  // Enable new password input
     } else {
         QMessageBox::warning(this, "Invalid Code", "The verification code is incorrect. Please try again.");
     }
 }
 
-// Reset password
-void Login::resetPassword()
+// Set the new password
+void Login::on_okNewPassword_clicked()
 {
     QString newPassword = ui->forgetuser_3->text();
-    QString cin = ui->forgetuser->text();  // Assuming forgetuser holds CINEMP from the forget page.
+    QString email = ui->forgetuser->text();  // Use email to identify the user.
 
     if (newPassword.isEmpty()) {
         QMessageBox::warning(this, "Error", "New password cannot be empty.");
@@ -193,16 +196,37 @@ void Login::resetPassword()
 
     QString hashedPassword = hashPassword(newPassword);
     QSqlQuery query;
-    query.prepare("UPDATE EMPLOYEE SET PASSWORD = :password WHERE CINEMP = :cin");
+    query.prepare("UPDATE EMPLOYEE SET PASSWORD = :password WHERE EMAIL = :email");
     query.bindValue(":password", hashedPassword);
-    query.bindValue(":cin", cin);
+    query.bindValue(":email", email);
 
     if (query.exec()) {
         QMessageBox::information(this, "Success", "Password updated successfully.");
         ui->stackedWidget->setCurrentWidget(ui->login);  // Return to login page
     } else {
-        QMessageBox::warning(this, "Error", "Failed to update password. Please check your input and try again.");
+        QMessageBox::warning(this, "Error", "Failed to update password. Please try again.");
     }
+}
+
+// Utility: Hash password
+QString Login::hashPassword(const QString &password)
+{
+    return QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256).toHex());
+}
+
+// Utility: Authenticate user
+bool Login::authenticateUser(const QString &cin, const QString &password)
+{
+    QString hashedPassword = hashPassword(password);
+    QSqlQuery query;
+    query.prepare("SELECT COUNT(*) FROM EMPLOYEE WHERE CINEMP = :cin AND PASSWORD = :password");
+    query.bindValue(":cin", cin);
+    query.bindValue(":password", hashedPassword);
+
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt() > 0;
+    }
+    return false;
 }
 
 // Utility: Check if CIN exists
@@ -229,26 +253,7 @@ bool Login::isPasswordSet(const QString &cin)
     return false;
 }
 
-// Utility: Hash password
-QString Login::hashPassword(const QString &password)
-{
-    return QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256).toHex());
-}
-
-// Utility: Authenticate user
-bool Login::authenticateUser(const QString &cin, const QString &password)
-{
-    QString hashedPassword = hashPassword(password);
-    QSqlQuery query;
-    query.prepare("SELECT COUNT(*) FROM EMPLOYEE WHERE (CINEMP = :cin) AND PASSWORD = :password");
-    query.bindValue(":cin", cin);
-    query.bindValue(":password", hashedPassword);
-
-    if (query.exec() && query.next()) {
-        return query.value(0).toInt() > 0;
-    }
-    return false;
-}
+// Exit the application
 void Login::exitApplication()
 {
     qDebug() << "Exit button clicked. Exiting application...";

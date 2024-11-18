@@ -1011,7 +1011,7 @@ QComboBox QAbstractItemView::item:hover {
    </item>
    <item>
     <property name="text">
-     <string>Pharmacy Technician</string>
+     <string>IT Technician</string>
     </property>
    </item>
    <item>

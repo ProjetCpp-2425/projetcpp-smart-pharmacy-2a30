@@ -18,21 +18,17 @@ public:
     ~MainWindow();
 
 private slots:
-    // Function to load employee data from the database
     void loadEmployeeData();
-
-    // Slot for adding employee (this will open the dialog)
+    void on_statistique_clicked();
     void on_addButton_clicked();
-
-    // Slot for removing employee
     void on_removeButton_clicked();
-
-    // Slot for editing employee (this will open the edit dialog)
-    void on_editButton_clicked();  // New function for Edit button click
+    void on_searchButton_clicked();
+    void on_editButton_clicked();
 
     void onSortButtonClicked();
 
     void generatePdf();
+    void on_loadButton_clicked();
 private:
     Ui::MainWindow *ui;  // UI pointer
 };
