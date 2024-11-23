@@ -25,7 +25,10 @@ int main(int argc, char *argv[])
     if (c.createconnect()) {
         Login loginDialog;  // Show the login dialog first
         if (loginDialog.exec() == QDialog::Accepted) {  // Check if login was successful
-            MainWindow w;
+            QString role = loginDialog.getRole();  // Fetch the role from the Login dialog
+            qDebug() << "Role passed to MainWindow:" << role;
+
+            MainWindow w(nullptr, role);  // Pass the role to MainWindow
             w.show();
             return a.exec();
         } else {

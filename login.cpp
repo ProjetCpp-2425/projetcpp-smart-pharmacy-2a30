@@ -7,6 +7,11 @@
 #include <QCryptographicHash>
 #include <QProcess>
 #include <QRandomGenerator>
+#include <QTimer>
+
+QTimer *verificationTimer = nullptr;
+int remainingAttempts = 3;
+bool isTimerExpired = false;
 
 Login::Login(QWidget *parent) :
     QDialog(parent),
@@ -15,17 +20,15 @@ Login::Login(QWidget *parent) :
     ui->setupUi(this);
     this->setWindowTitle("PHARMEASE - Login");
 
-    // Set the stacked widget to start on the login page
+    // Initialize UI states
     ui->stackedWidget->setCurrentWidget(ui->login);
-
-    // Set password fields to mask input by default
     ui->passwordlogin->setEchoMode(QLineEdit::Password);
     ui->registerpass->setEchoMode(QLineEdit::Password);
-    ui->forgetuser_3->setEchoMode(QLineEdit::Password);  // For new password in forget password
-    ui->forgetuser_2->setEnabled(false);  // Disable verification code input initially
-    ui->forgetuser_3->setEnabled(false);  // Disable new password input initially
+    ui->forgetuser_3->setEchoMode(QLineEdit::Password);
+    ui->forgetuser_2->setEnabled(false);
+    ui->forgetuser_3->setEnabled(false);
 
-    // Connect buttons to slots
+    // Connect UI actions to slots
     connect(ui->oklogin, &QPushButton::clicked, this, &Login::on_oklogin_clicked);
     connect(ui->gotoregister, &QPushButton::clicked, this, &Login::on_gotoregister_clicked);
     connect(ui->ok, &QPushButton::clicked, this, &Login::on_okregister_clicked);
@@ -33,8 +36,6 @@ Login::Login(QWidget *parent) :
     connect(ui->cancel_2, &QPushButton::clicked, this, &Login::on_cancelForget_clicked);
     connect(ui->forget, &QPushButton::clicked, this, &Login::on_forget_clicked);
     connect(ui->cancellogin, &QPushButton::clicked, this, &Login::exitApplication);
-
-    // New buttons for the forget password flow
     connect(ui->ok_email, &QPushButton::clicked, this, &Login::on_okEmail_clicked);
     connect(ui->ok_verificationcode, &QPushButton::clicked, this, &Login::on_okVerificationCode_clicked);
     connect(ui->ok_newpassword, &QPushButton::clicked, this, &Login::on_okNewPassword_clicked);
@@ -62,8 +63,18 @@ void Login::on_oklogin_clicked()
     QString cin = ui->userlogin->text();
     QString password = ui->passwordlogin->text();
 
-    if (authenticateUser(cin, password)) {
-        this->accept();  // Close login dialog with accepted state
+    // Authenticate user and fetch role
+    QSqlQuery query;
+    QString hashedPassword = hashPassword(password);
+    query.prepare("SELECT ROLE FROM EMPLOYEE WHERE CINEMP = :cin AND PASSWORD = :password");
+    query.bindValue(":cin", cin);
+    query.bindValue(":password", hashedPassword);
+
+    if (query.exec() && query.next()) {
+        userRole = query.value("ROLE").toString();  // Save the role
+        qDebug() << "User role fetched in Login dialog:" << userRole;
+
+        this->accept();  // Close the Login dialog with accepted state
     } else {
         QMessageBox::warning(this, "Login Failed", "Invalid credentials. Please try again.");
     }
@@ -142,12 +153,27 @@ void Login::on_okEmail_clicked()
         return;
     }
 
+    // Check if the email exists in the database
+    QSqlQuery query;
+    query.prepare("SELECT COUNT(*) FROM EMPLOYEE WHERE EMAIL = :email");
+    query.bindValue(":email", email);
+
+    if (query.exec() && query.next()) {
+        if (query.value(0).toInt() == 0) {
+            QMessageBox::warning(this, "Error", "No account associated with this email.");
+            return;
+        }
+    } else {
+        QMessageBox::warning(this, "Error", "Failed to query database. Please try again.");
+        return;
+    }
+
     // Generate a random 4-digit verification code
     verificationCode = QString::number(QRandomGenerator::global()->bounded(1000, 9999));
 
     QProcess *process = new QProcess(this);
-    QString pythonPath = "python";  // Ensure Python is in the PATH or specify the full path
-    QString scriptPath = "E:/2A/projetcpp-smart-pharmacy-2a30/send_email.py";  // Path to your script
+    QString pythonPath = "python";
+    QString scriptPath = "E:/2A/projetcpp-smart-pharmacy-2a30/send_email.py";
 
     QStringList arguments;
     arguments << scriptPath << email << "Your verification code is: " + verificationCode;
@@ -157,7 +183,10 @@ void Login::on_okEmail_clicked()
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [=](int exitCode, QProcess::ExitStatus) {
         if (exitCode == 0) {
             QMessageBox::information(this, "Success", "Verification code sent to your email.");
-            ui->forgetuser_2->setEnabled(true);  // Enable verification code input
+            ui->forgetuser_2->setEnabled(true);
+            startVerificationTimer();  // Start the 60-second timer
+            remainingAttempts = 3;     // Reset attempts
+            isTimerExpired = false;    // Reset the timer status
         } else {
             QMessageBox::warning(this, "Error", "Failed to send email. Check your setup.");
         }
@@ -165,9 +194,51 @@ void Login::on_okEmail_clicked()
     });
 }
 
-// Verify the entered code
+void Login::startVerificationTimer()
+{
+    if (verificationTimer) {
+        verificationTimer->stop();
+        delete verificationTimer;
+    }
+
+    // Reset state variables
+    isTimerExpired = false;
+    int countdown = 60;  // Countdown starts from 60 seconds
+
+    // Update the countdown label initially
+    ui->countdownLabel->setText(QString("Time remaining: %1 seconds").arg(countdown));
+    ui->countdownLabel->setVisible(true);  // Ensure the label is visible
+
+    // Create the timer for the countdown
+    verificationTimer = new QTimer(this);
+
+    // Connect to a lambda function to update the label every second
+    connect(verificationTimer, &QTimer::timeout, [=]() mutable {
+        countdown--;
+
+        if (countdown > 0) {
+            // Update the label with the remaining time
+            ui->countdownLabel->setText(QString("Time remaining: %1 seconds").arg(countdown));
+        } else {
+            // Time expired, disable input and show a warning
+            isTimerExpired = true;
+            ui->forgetuser_2->setEnabled(false);
+            ui->countdownLabel->setText("Time expired. Please request a new code.");
+            verificationTimer->stop();
+        }
+    });
+
+    // Start the timer to tick every second
+    verificationTimer->start(1000);
+}
+
 void Login::on_okVerificationCode_clicked()
 {
+    if (isTimerExpired) {
+        QMessageBox::warning(this, "Error", "Time expired. Please request a new verification code.");
+        return;
+    }
+
     QString enteredCode = ui->forgetuser_2->text().trimmed();
 
     if (enteredCode.isEmpty()) {
@@ -177,17 +248,23 @@ void Login::on_okVerificationCode_clicked()
 
     if (enteredCode == verificationCode) {
         QMessageBox::information(this, "Verified", "Verification code valid. Set your new password.");
-        ui->forgetuser_3->setEnabled(true);  // Enable new password input
+        ui->forgetuser_3->setEnabled(true);
+        if (verificationTimer) verificationTimer->stop();  // Stop the timer
     } else {
-        QMessageBox::warning(this, "Invalid Code", "The verification code is incorrect. Please try again.");
+        remainingAttempts--;
+        if (remainingAttempts > 0) {
+            QMessageBox::warning(this, "Invalid Code", QString("Incorrect code. %1 attempts remaining.").arg(remainingAttempts));
+        } else {
+            QMessageBox::warning(this, "Invalid Code", "Maximum attempts reached. Please request a new verification code.");
+            ui->forgetuser_2->setEnabled(false);
+        }
     }
 }
 
-// Set the new password
 void Login::on_okNewPassword_clicked()
 {
     QString newPassword = ui->forgetuser_3->text();
-    QString email = ui->forgetuser->text();  // Use email to identify the user.
+    QString email = ui->forgetuser->text();
 
     if (newPassword.isEmpty()) {
         QMessageBox::warning(this, "Error", "New password cannot be empty.");
@@ -202,7 +279,7 @@ void Login::on_okNewPassword_clicked()
 
     if (query.exec()) {
         QMessageBox::information(this, "Success", "Password updated successfully.");
-        ui->stackedWidget->setCurrentWidget(ui->login);  // Return to login page
+        ui->stackedWidget->setCurrentWidget(ui->login);
     } else {
         QMessageBox::warning(this, "Error", "Failed to update password. Please try again.");
     }

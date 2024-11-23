@@ -16,12 +16,14 @@ class Login : public QDialog
 public:
     explicit Login(QWidget *parent = nullptr);
     ~Login();
+    QString getRole() const { return userRole; }
 
 private slots:
     // Login and registration functions
     void on_oklogin_clicked();
     void on_okregister_clicked();
     void on_gotoregister_clicked();
+
     // Forget password flow
     void on_forget_clicked();
     void on_okEmail_clicked();              // Send verification code via email
@@ -35,17 +37,15 @@ private slots:
 
     // Show/Hide password toggling
     void on_showpassword_toggled(bool checked);
-
 private:
     Ui::Login *ui;
-
+    void startVerificationTimer();
     QString verificationCode;  // Holds the generated verification code
-
-    // Utility functions
     QString hashPassword(const QString &password);  // Hash the password
     bool authenticateUser(const QString &cin, const QString &password);  // Validate login credentials
     bool isCinExists(const QString &cin);           // Check if CIN exists in the database
     bool isPasswordSet(const QString &cin);         // Check if the user already has a password
+    QString userRole;
 };
 
 #endif // LOGIN_H

@@ -6,6 +6,7 @@
 #include "addemployee.h"
 #include "editemployee.h"
 #include "employee.h"  // Include Employee for the calculateAge function
+#include "login.h"
 #include <QSqlError>
 #include <QSqlRecord>
 #include <QMessageBox>
@@ -30,17 +31,18 @@
 #include <QVBoxLayout>
 
 // Constructor
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(QWidget *parent, const QString &role) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    userRole(role)
 {
     ui->setupUi(this);
     this->setWindowTitle("PHARMEASE - Dashboard");
+    qDebug() << "User role received in MainWindow:" << userRole;
     qDebug() << "Available database drivers: " << QSqlDatabase::drivers();
-
+    setupRoleBasedAccess();
     // Load employees into the table view on startup
     loadEmployeeData();
-
     // Connect Add and Remove buttons to their respective slots
     connect(ui->addButton, &QPushButton::clicked, this, &MainWindow::on_addButton_clicked);
     connect(ui->removeButton, &QPushButton::clicked, this, &MainWindow::on_removeButton_clicked);
@@ -50,7 +52,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->statsButton, &QPushButton::clicked, this, &MainWindow::on_statistique_clicked);
     connect(ui->loadButton, &QPushButton::clicked, this, &MainWindow::on_loadButton_clicked);
     connect(ui->searchButton, &QPushButton::clicked, this, &MainWindow::on_searchButton_clicked);
-
+    connect(ui->logoutButton, &QPushButton::clicked, this, &MainWindow::on_logoutButton_clicked);
+    connect(ui->logoutButton1, &QPushButton::clicked, this, &MainWindow::on_logoutButton_clicked);
+    connect(ui->tableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::onTableSelectionChanged);
+    connect(ui->imageButton, &QPushButton::clicked, this, &MainWindow::on_imageButton_clicked);
 
 }
 
@@ -64,7 +69,7 @@ MainWindow::~MainWindow()
 void MainWindow::loadEmployeeData()
 {
     QSqlQuery query;
-    query.prepare("SELECT CINEMP, IDEMP, FULL_NAME, HIRE_DATE, ROLE, SALARY, EMAIL, DATE_OF_BIRTH, GENDER, PHONE FROM EMPLOYEE");
+    query.prepare("SELECT CINEMP, IDEMP, FULL_NAME, HIRE_DATE, ROLE, SALARY, EMAIL, DATE_OF_BIRTH, GENDER, PHONE, IMAGE_PATH FROM EMPLOYEE");
 
     if (!query.exec()) {
         qDebug() << "Error loading data from database: " << query.lastError().text();
@@ -74,9 +79,14 @@ void MainWindow::loadEmployeeData()
     QStandardItemModel *model = new QStandardItemModel(this);
     model->setHorizontalHeaderLabels({"CINEMP", "IDEMP", "FULL NAME", "HIRE DATE", "ROLE", "SALARY", "EMAIL", "AGE", "GENDER", "PHONE"});
 
+    imagePaths.clear();  // Clear previous image paths
+
     while (query.next()) {
         QList<QStandardItem *> rowItems;
-        rowItems << new QStandardItem(query.value("CINEMP").toString());
+        QString cin = query.value("CINEMP").toString();
+        QString imagePath = query.value("IMAGE_PATH").toString();
+
+        rowItems << new QStandardItem(cin);
         rowItems << new QStandardItem(query.value("IDEMP").toString());
         rowItems << new QStandardItem(query.value("FULL_NAME").toString());
         rowItems << new QStandardItem(query.value("HIRE_DATE").toDate().toString("yyyy-MM-dd"));
@@ -90,13 +100,15 @@ void MainWindow::loadEmployeeData()
         rowItems << new QStandardItem(query.value("GENDER").toString());
         rowItems << new QStandardItem(query.value("PHONE").toString());
 
+        // Add the image path to the map
+        imagePaths[cin] = imagePath;
+
         model->appendRow(rowItems);
     }
 
     ui->tableView->setModel(model);
     ui->tableView->resizeColumnsToContents();
 }
-
 // Slot to open the AddEmployee dialog
 void MainWindow::on_addButton_clicked()
 {
@@ -276,7 +288,7 @@ void MainWindow::generatePdf()
 }
 void MainWindow::on_statistique_clicked()
 {
-    this->setWindowTitle("PHARMEASE - Employee Statistics");
+    //this->setWindowTitle("PHARMEASE - Employee Statistics");
 
     // Bar series for salary
     QBarSeries *salarySeries = new QBarSeries();
@@ -538,3 +550,94 @@ void MainWindow::on_searchButton_clicked()
 
     searchDialog.exec();
 }
+void MainWindow::setupRoleBasedAccess()
+{
+    if (userRole == "Pharmacy IT Specialist") {
+        // Allow full access and show the "employeepage"
+        ui->stackedWidget->setCurrentWidget(ui->employeepage);
+    } else {
+        // Restrict access and show the "otherpages"
+        ui->stackedWidget->setCurrentWidget(ui->otherpages);
+
+        // Optionally disable access to "employeepage" buttons
+        ui->employeebutton1->setEnabled(false);
+    }
+}
+void MainWindow::on_logoutButton_clicked()
+{
+    // Close the current MainWindow
+    this->close();
+
+    // Show the Login dialog
+    Login loginDialog;
+    if (loginDialog.exec() == QDialog::Accepted) {
+        // If login is successful again, show a new MainWindow
+        QString role = loginDialog.getRole();
+        MainWindow *mainWindow = new MainWindow(nullptr, role);
+        mainWindow->show();
+    } else {
+        // Exit the application if login is canceled
+        qApp->quit();
+    }
+}
+void MainWindow::on_imageButton_clicked()
+{
+    // Ensure an employee is selected
+    QModelIndexList selectedRows = ui->tableView->selectionModel()->selectedRows();
+    if (selectedRows.isEmpty()) {
+        QMessageBox::warning(this, "Error", "No employee selected. Please select an employee first.");
+        return;
+    }
+
+    // Get the selected employee's CINEMP (primary key)
+    QString cinemp = ui->tableView->model()->index(selectedRows[0].row(), 0).data().toString();
+
+    // Open a file dialog to select an image
+    QString imagePath = QFileDialog::getOpenFileName(this, "Select Employee Image", "", "Images (*.png *.jpg *.jpeg *.bmp)");
+    if (imagePath.isEmpty()) {
+        QMessageBox::warning(this, "Error", "No image selected.");
+        return;
+    }
+
+    // Update the database with the image path
+    QSqlQuery query;
+    query.prepare("UPDATE EMPLOYEE SET IMAGE_PATH = :imagePath WHERE CINEMP = :cinemp");
+    query.bindValue(":imagePath", imagePath);
+    query.bindValue(":cinemp", cinemp);
+
+    if (query.exec()) {
+        QMessageBox::information(this, "Success", "Image uploaded successfully!");
+        qDebug() << "Image path updated in database: " << imagePath;
+    } else {
+        QMessageBox::warning(this, "Error", "Failed to update the database: " + query.lastError().text());
+    }
+}
+
+void MainWindow::onTableSelectionChanged()
+{
+    QModelIndexList selectedRows = ui->tableView->selectionModel()->selectedRows();
+    if (selectedRows.isEmpty()) {
+        ui->imageLabel->clear();
+        return;
+    }
+
+    QString cin = ui->tableView->model()->index(selectedRows[0].row(), 0).data().toString();  // CINEMP is in column 0
+    QString imagePath = imagePaths.value(cin);
+
+    qDebug() << "Selected CINEMP:" << cin;
+    qDebug() << "Image path for selected employee:" << imagePath;
+
+    if (!imagePath.isEmpty() && QFile::exists(imagePath)) {
+        QPixmap pixmap(imagePath);
+        if (pixmap.isNull()) {
+            qDebug() << "Error: Unable to load the image from path:" << imagePath;
+            ui->imageLabel->clear();
+        } else {
+            ui->imageLabel->setPixmap(pixmap.scaled(ui->imageLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        }
+    } else {
+        qDebug() << "Error: Invalid or missing image path.";
+        ui->imageLabel->clear();
+    }
+}
+
