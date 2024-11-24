@@ -126,9 +126,30 @@ void Login::on_showpassword_toggled(bool checked)
 // Cancel and return to login page from forget or register page
 void Login::on_cancelForget_clicked()
 {
+    // Reset all variables and states
+    remainingAttempts = 3;
+    isTimerExpired = false;
+
+    if (verificationTimer) {
+        verificationTimer->stop();
+        delete verificationTimer;
+        verificationTimer = nullptr;
+    }
+
+    // Reset all UI elements
+    ui->forgetuser->clear();       // Clear email input
+    ui->forgetuser_2->clear();     // Clear verification code input
+    ui->forgetuser_3->clear();     // Clear new password input
+
+    ui->forgetuser_2->setEnabled(false);  // Disable verification code input
+    ui->forgetuser_3->setEnabled(false);  // Disable new password input
+    ui->countdownLabel->setVisible(false);  // Hide the countdown label
+
+    // Navigate back to the login page
     ui->stackedWidget->setCurrentWidget(ui->login);
     this->setWindowTitle("PHARMEASE - Login");
 }
+
 
 void Login::on_cancel_clicked()
 {
@@ -139,9 +160,30 @@ void Login::on_cancel_clicked()
 // Forget password page
 void Login::on_forget_clicked()
 {
+    // Reset all variables and states
+    remainingAttempts = 3;
+    isTimerExpired = false;
+
+    if (verificationTimer) {
+        verificationTimer->stop();
+        delete verificationTimer;
+        verificationTimer = nullptr;
+    }
+
+    // Reset all UI elements
+    ui->forgetuser->clear();       // Clear email input
+    ui->forgetuser_2->clear();     // Clear verification code input
+    ui->forgetuser_3->clear();     // Clear new password input
+
+    ui->forgetuser_2->setEnabled(false);  // Disable verification code input
+    ui->forgetuser_3->setEnabled(false);  // Disable new password input
+    ui->countdownLabel->setVisible(false);  // Hide the countdown label
+
+    // Navigate to the forget password page
     ui->stackedWidget->setCurrentWidget(ui->forget_2);
     this->setWindowTitle("PHARMEASE - Forget Password");
 }
+
 
 // Send verification code via email
 void Login::on_okEmail_clicked()
@@ -223,7 +265,7 @@ void Login::startVerificationTimer()
             // Time expired, disable input and show a warning
             isTimerExpired = true;
             ui->forgetuser_2->setEnabled(false);
-            ui->countdownLabel->setText("Time expired. Please request a new code.");
+            ui->countdownLabel->setText("Time expired.");
             verificationTimer->stop();
         }
     });
@@ -231,6 +273,7 @@ void Login::startVerificationTimer()
     // Start the timer to tick every second
     verificationTimer->start(1000);
 }
+
 
 void Login::on_okVerificationCode_clicked()
 {
@@ -250,6 +293,7 @@ void Login::on_okVerificationCode_clicked()
         QMessageBox::information(this, "Verified", "Verification code valid. Set your new password.");
         ui->forgetuser_3->setEnabled(true);
         if (verificationTimer) verificationTimer->stop();  // Stop the timer
+        ui->countdownLabel->setVisible(false);  // Hide the timer label
     } else {
         remainingAttempts--;
         if (remainingAttempts > 0) {
@@ -257,10 +301,11 @@ void Login::on_okVerificationCode_clicked()
         } else {
             QMessageBox::warning(this, "Invalid Code", "Maximum attempts reached. Please request a new verification code.");
             ui->forgetuser_2->setEnabled(false);
+            if (verificationTimer) verificationTimer->stop();  // Stop the timer
+            ui->countdownLabel->setVisible(false);  // Hide the timer label
         }
     }
 }
-
 void Login::on_okNewPassword_clicked()
 {
     QString newPassword = ui->forgetuser_3->text();
@@ -278,8 +323,44 @@ void Login::on_okNewPassword_clicked()
     query.bindValue(":email", email);
 
     if (query.exec()) {
+        // Fetch full name and CIN from the database
+        QString fullName, cin;
+        QSqlQuery userQuery;
+        userQuery.prepare("SELECT FULL_NAME, CINEMP FROM EMPLOYEE WHERE EMAIL = :email");
+        userQuery.bindValue(":email", email);
+
+        if (userQuery.exec() && userQuery.next()) {
+            fullName = userQuery.value("FULL_NAME").toString();
+            cin = userQuery.value("CINEMP").toString();
+        } else {
+            QMessageBox::warning(this, "Error", "Failed to fetch user details.");
+            return;
+        }
+
         QMessageBox::information(this, "Success", "Password updated successfully.");
         ui->stackedWidget->setCurrentWidget(ui->login);
+
+        // Trigger the Python script to notify the admin
+        QProcess *process = new QProcess(this);
+        QString pythonPath = "python";  // Adjust this if your Python executable has a different path
+        QString scriptPath = "E:/2A/projetcpp-smart-pharmacy-2a30/send_password_update_notification.py";
+
+        QStringList arguments;
+        arguments << scriptPath
+                  << "timoumiaa55@gmail.com"  // Replace with the admin's email
+                  << fullName
+                  << cin;
+
+        process->start(pythonPath, arguments);
+
+        connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [=](int exitCode, QProcess::ExitStatus) {
+            if (exitCode == 0) {
+                qDebug() << "Admin notification email sent successfully.";
+            } else {
+                qDebug() << "Failed to send admin notification email.";
+            }
+            process->deleteLater();
+        });
     } else {
         QMessageBox::warning(this, "Error", "Failed to update password. Please try again.");
     }

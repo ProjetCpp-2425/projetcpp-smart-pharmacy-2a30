@@ -27,9 +27,11 @@
 #include <QtCharts/QValueAxis>
 #include <QtCharts/QCategoryAxis>
 #include <QtCharts/QBarCategoryAxis>
+#include <QtCharts/QPieSeries>
 #include <QVBoxLayout>
 #include <QVBoxLayout>
-
+#include <QTextStream>
+#include <QFile>
 // Constructor
 MainWindow::MainWindow(QWidget *parent, const QString &role) :
     QMainWindow(parent),
@@ -56,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &role) :
     connect(ui->logoutButton1, &QPushButton::clicked, this, &MainWindow::on_logoutButton_clicked);
     connect(ui->tableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::onTableSelectionChanged);
     connect(ui->imageButton, &QPushButton::clicked, this, &MainWindow::on_imageButton_clicked);
+
 
 }
 
@@ -245,56 +248,165 @@ void MainWindow::generatePdf()
     pdfWriter.setResolution(300);
 
     QPainter painter(&pdfWriter);
-    painter.setFont(QFont("Arial", 12));
-    painter.drawText(100, 100, "Employee Data");
+    painter.setRenderHint(QPainter::Antialiasing);
 
-    int yOffset = 150;
-    QSqlQuery query("SELECT CINEMP, IDEMP, FULL_NAME, HIRE_DATE, ROLE, SALARY, EMAIL, DATE_OF_BIRTH, GENDER, PHONE FROM EMPLOYEE");
-    int i = 1;
+    // Set up font and styles
+    QFont titleFont("Arial", 16, QFont::Bold);
+    QFont dataFont("Arial", 12);
+    QPen titlePen(Qt::darkGreen);
+    QPen dataPen(Qt::black);
 
-    while (query.next()) {
-        QDate dob = query.value("DATE_OF_BIRTH").toDate();
-        int age = Employee::calculateAge(dob);
+    // Determine whether an employee is selected
+    QModelIndexList selectedRows = ui->tableView->selectionModel()->selectedRows();
 
-        painter.drawText(50, yOffset, QString("Employee %1:").arg(i++));
-        yOffset += 70;
-        painter.drawText(100, yOffset, "CINEMP: " + query.value("CINEMP").toString());
-        yOffset += 70;
-        painter.drawText(100, yOffset, "IDEMP: " + query.value("IDEMP").toString());
-        yOffset += 70;
-        painter.drawText(100, yOffset, "Full Name: " + query.value("FULL_NAME").toString());
-        yOffset += 70;
-        painter.drawText(100, yOffset, "Hire Date: " + query.value("HIRE_DATE").toString());
-        yOffset += 70;
-        painter.drawText(100, yOffset, "Role: " + query.value("ROLE").toString());
-        yOffset += 70;
-        painter.drawText(100, yOffset, "Salary: " + query.value("SALARY").toString());
-        yOffset += 70;
-        painter.drawText(100, yOffset, "Email: " + query.value("EMAIL").toString());
-        yOffset += 70;
-        painter.drawText(100, yOffset, "Date of Birth: " + dob.toString("yyyy-MM-dd"));
-        yOffset += 70;
+    if (selectedRows.isEmpty()) {
+        // No selection - Export all employees
+        QSqlQuery query("SELECT CINEMP, IDEMP, FULL_NAME, HIRE_DATE, ROLE, SALARY, EMAIL, DATE_OF_BIRTH, GENDER, PHONE FROM EMPLOYEE");
+        int yOffset = 100;
+        int employeeCount = 1;
+
+        while (query.next()) {
+            // Title
+            painter.setFont(titleFont);
+            painter.setPen(titlePen);
+            QString title = QString("Employee %1:").arg(employeeCount++);
+            QRect titleRect(0, yOffset, pdfWriter.width(), 50);
+            painter.drawText(titleRect, Qt::AlignCenter, title);
+
+            // Employee data
+            yOffset += 70;
+            painter.setFont(dataFont);
+            painter.setPen(dataPen);
+
+            painter.drawText(100, yOffset, "CINEMP: " + query.value("CINEMP").toString());
+            yOffset += 50;
+            painter.drawText(100, yOffset, "IDEMP: " + query.value("IDEMP").toString());
+            yOffset += 50;
+            painter.drawText(100, yOffset, "Full Name: " + query.value("FULL_NAME").toString());
+            yOffset += 50;
+            painter.drawText(100, yOffset, "Hire Date: " + query.value("HIRE_DATE").toString());
+            yOffset += 50;
+            painter.drawText(100, yOffset, "Role: " + query.value("ROLE").toString());
+            yOffset += 50;
+            painter.drawText(100, yOffset, "Salary: " + QString::number(query.value("SALARY").toDouble(), 'f', 2));
+            yOffset += 50;
+            painter.drawText(100, yOffset, "Email: " + query.value("EMAIL").toString());
+            yOffset += 50;
+
+            // Date of Birth
+            QDate dob = query.value("DATE_OF_BIRTH").toDate();
+            if (dob.isValid()) {
+                painter.drawText(100, yOffset, "Date of Birth: " + dob.toString("yyyy-MM-dd"));
+                yOffset += 50;
+                int age = Employee::calculateAge(dob);
+                painter.drawText(100, yOffset, "Age: " + QString::number(age));
+            } else {
+                painter.drawText(100, yOffset, "Date of Birth: Invalid Date");
+                yOffset += 50;
+                painter.drawText(100, yOffset, "Age: N/A");
+            }
+            yOffset += 50;
+
+            painter.drawText(100, yOffset, "Gender: " + query.value("GENDER").toString());
+            yOffset += 50;
+            painter.drawText(100, yOffset, "Phone: " + query.value("PHONE").toString());
+            yOffset += 70; // Space between employees
+
+            // Add page break if the content overflows
+            if (yOffset > pdfWriter.height() - 150) {
+                pdfWriter.newPage();
+                yOffset = 100;
+            }
+        }
+    } else {
+        // Selection - Export selected employee
+        QModelIndex selectedRow = selectedRows[0];
+        int row = selectedRow.row();
+
+        QString cin = ui->tableView->model()->data(ui->tableView->model()->index(row, 0)).toString();
+        QString id = ui->tableView->model()->data(ui->tableView->model()->index(row, 1)).toString();
+        QString name = ui->tableView->model()->data(ui->tableView->model()->index(row, 2)).toString();
+        QString hireDate = ui->tableView->model()->data(ui->tableView->model()->index(row, 3)).toString();
+        QString role = ui->tableView->model()->data(ui->tableView->model()->index(row, 4)).toString();
+        QString salary = ui->tableView->model()->data(ui->tableView->model()->index(row, 5)).toString();
+        QString email = ui->tableView->model()->data(ui->tableView->model()->index(row, 6)).toString();
+        int age = ui->tableView->model()->data(ui->tableView->model()->index(row, 7)).toInt();
+        QString gender = ui->tableView->model()->data(ui->tableView->model()->index(row, 8)).toString();
+        QString phone = ui->tableView->model()->data(ui->tableView->model()->index(row, 9)).toString();
+
+        // Title
+        painter.setFont(titleFont);
+        painter.setPen(titlePen);
+        QRect titleRect(0, 100, pdfWriter.width(), 50);
+        painter.drawText(titleRect, Qt::AlignCenter, "Selected Employee");
+
+        // Employee data
+        painter.setFont(dataFont);
+        painter.setPen(dataPen);
+        int yOffset = 200;
+
+        painter.drawText(100, yOffset, "CINEMP: " + cin);
+        yOffset += 50;
+        painter.drawText(100, yOffset, "IDEMP: " + id);
+        yOffset += 50;
+        painter.drawText(100, yOffset, "Full Name: " + name);
+        yOffset += 50;
+        painter.drawText(100, yOffset, "Hire Date: " + hireDate);
+        yOffset += 50;
+        painter.drawText(100, yOffset, "Role: " + role);
+        yOffset += 50;
+        painter.drawText(100, yOffset, "Salary: " + salary);
+        yOffset += 50;
+        painter.drawText(100, yOffset, "Email: " + email);
+        yOffset += 50;
         painter.drawText(100, yOffset, "Age: " + QString::number(age));
-        yOffset += 70;
-        painter.drawText(100, yOffset, "Gender: " + query.value("GENDER").toString());
-        yOffset += 70;
-        painter.drawText(100, yOffset, "Phone: " + query.value("PHONE").toString());
+        yOffset += 50;
+        painter.drawText(100, yOffset, "Gender: " + gender);
+        yOffset += 50;
+        painter.drawText(100, yOffset, "Phone: " + phone);
+    }
 
-        yOffset += 110;  // Add space between employees
+    // Add the image at the bottom-right corner
+    QPixmap pixmap("E:/2A/projetcpp-smart-pharmacy-2a30/Resources/icon.png");
+
+    if (!pixmap.isNull()) {
+        // Get the original width and height of the image
+        int originalWidth = pixmap.width();
+        int originalHeight = pixmap.height();
+
+        // Set the maximum width and height for the image in the PDF
+        int maxWidth = 200;
+        int maxHeight = 200;
+
+        // Calculate the scaled dimensions while maintaining the aspect ratio
+        int scaledWidth = maxWidth;
+        int scaledHeight = (originalHeight * maxWidth) / originalWidth;
+        if (scaledHeight > maxHeight) {
+            scaledHeight = maxHeight;
+            scaledWidth = (originalWidth * maxHeight) / originalHeight;
+        }
+
+        // Center the image at the bottom-right corner of the page
+        int x = pdfWriter.width() - scaledWidth - 50; // 50 px margin from the right
+        int y = pdfWriter.height() - scaledHeight - 50; // 50 px margin from the bottom
+
+        // Draw the scaled image
+        QRect imageRect(x, y, scaledWidth, scaledHeight);
+        painter.drawPixmap(imageRect, pixmap);
     }
 
     painter.end();
     QMessageBox::information(this, tr("PDF Generated"), tr("The employee data has been saved as a PDF."));
 }
+
+
 void MainWindow::on_statistique_clicked()
 {
-    //this->setWindowTitle("PHARMEASE - Employee Statistics");
+    // Set the title for the statistics window
+    this->setWindowTitle("PHARMEASE - Gender Statistics");
 
-    // Bar series for salary
-    QBarSeries *salarySeries = new QBarSeries();
-    QBarSet *salarySet = new QBarSet("Salary");
-
-    QStringList employeeLabels;
+    // Pie series for gender distribution
+    QPieSeries *genderSeries = new QPieSeries();
 
     // Ensure database connection
     QSqlDatabase db = QSqlDatabase::database();
@@ -304,9 +416,9 @@ void MainWindow::on_statistique_clicked()
         return;
     }
 
-    // Query to get employee data
+    // Query to count males and females
     QSqlQuery query(db);
-    query.prepare("SELECT FULL_NAME, DATE_OF_BIRTH, SALARY FROM EMPLOYEE");
+    query.prepare("SELECT GENDER, COUNT(*) FROM EMPLOYEE GROUP BY GENDER");
 
     if (!query.exec()) {
         qDebug() << "Failed to execute query:" << query.lastError().text();
@@ -314,49 +426,27 @@ void MainWindow::on_statistique_clicked()
         return;
     }
 
+    // Add data to the pie series
     while (query.next()) {
-        QString name = query.value("FULL_NAME").toString();
-        QDate dateOfBirth = query.value("DATE_OF_BIRTH").toDate();
-        double salary = query.value("SALARY").toDouble();
-
-        if (!dateOfBirth.isValid()) {
-            qDebug() << "Invalid date of birth for employee:" << name;
-            continue;
-        }
-
-        // Use Employee::calculateAge to determine age
-        Employee tempEmployee;
-        tempEmployee.setDateOfBirth(dateOfBirth);
-        int age = tempEmployee.calculateAge();
-
-        *salarySet << salary;
-
-        // Format the label: Name, Age, Salary on separate lines
-        employeeLabels << QString("%1\n%2\n$%3")
-                            .arg(name)
-                            .arg(age)
-                            .arg(QString::number(salary, 'f', 2));
+        QString gender = query.value(0).toString();
+        int count = query.value(1).toInt();
+        genderSeries->append(gender + " (" + QString::number(count) + ")", count);
     }
 
-    salarySeries->append(salarySet);
+    // Customize the pie chart
+    genderSeries->setLabelsVisible();
+    genderSeries->setLabelsPosition(QPieSlice::LabelOutside);
+    for (auto slice : genderSeries->slices()) {
+        slice->setLabelColor(Qt::black);
+        slice->setBorderColor(Qt::yellow);
+        slice->setBorderWidth(2);
+    }
 
     // Create the chart
     QChart *chart = new QChart();
-    chart->addSeries(salarySeries);
-    chart->setTitle("Employee Statistics: Salary Distribution by Employee");
+    chart->addSeries(genderSeries);
+    chart->setTitle("Gender Distribution");
     chart->setAnimationOptions(QChart::AllAnimations);
-
-    // Configure X-axis for employee labels
-    QBarCategoryAxis *axisX = new QBarCategoryAxis();
-    axisX->append(employeeLabels);
-    chart->addAxis(axisX, Qt::AlignBottom);
-    salarySeries->attachAxis(axisX);
-
-    // Configure Y-axis for salary values
-    QValueAxis *axisY = new QValueAxis();
-    axisY->setTitleText("Salary ($)");
-    chart->addAxis(axisY, Qt::AlignLeft);
-    salarySeries->attachAxis(axisY);
 
     // Create the chart view
     QChartView *chartView = new QChartView(chart);
@@ -364,7 +454,7 @@ void MainWindow::on_statistique_clicked()
 
     // Display the chart in a new window
     QWidget *statsWindow = new QWidget();
-    statsWindow->setWindowTitle("Employee Statistics");
+    statsWindow->setWindowTitle("Employee Gender Statistics");
     QVBoxLayout *layout = new QVBoxLayout(statsWindow);
     layout->addWidget(chartView);
 
@@ -386,71 +476,12 @@ void MainWindow::on_searchButton_clicked()
     QLabel *comboLabel = new QLabel("Search By:");
     QComboBox *searchCriteria = new QComboBox();
     searchCriteria->addItems({"Name", "CIN", "Email", "Phone"});
-    searchCriteria->setStyleSheet(R"(
-        QComboBox {
-            background-color: #3d3d3d;
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 7px;
-            border: 2px solid #00ff00;
-            padding: 8px 15px;
-            outline: none;
-        }
-
-        QComboBox::drop-down {
-            border: none;
-            background: transparent;
-        }
-
-        QComboBox QAbstractItemView {
-            background-color: #3d3d3d;
-            color: #ffffff;
-            border: 2px solid #00ff00;
-            selection-background-color: #2d89ef;
-            selection-color: #ffffff;
-            border-radius: 7px;
-        }
-
-        QComboBox:hover {
-            color: #e0e0e0;
-            background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));
-            border-color: #2d89ef;
-        }
-
-        QComboBox:pressed, QComboBox:on {
-            background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:1 rgba(45, 45, 45, 255));
-            border-color: #da532c;
-        }
-    )");
     layout->addWidget(comboLabel);
     layout->addWidget(searchCriteria);
 
-    // LineEdit for search input with stylesheet
+    // LineEdit for search input
     QLabel *lineEditLabel = new QLabel("Enter Value:");
     QLineEdit *searchInput = new QLineEdit();
-    searchInput->setStyleSheet(R"(
-        QLineEdit {
-            border-style: solid;
-            background-color: #3d3d3d;
-            color: #fff;
-            border-radius: 7px;
-            border-width: 2px;
-            border-color: #00ff00;
-            padding: 6px;
-            outline: none;
-        }
-
-        QLineEdit:hover {
-            background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));
-            border-color: #2d89ef;
-        }
-
-        QLineEdit:focus {
-            background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:1 rgba(45, 45, 45, 255));
-            border-color: #da532c;
-        }
-    )");
     layout->addWidget(lineEditLabel);
     layout->addWidget(searchInput);
 
@@ -458,54 +489,13 @@ void MainWindow::on_searchButton_clicked()
     QHBoxLayout *buttonLayout = new QHBoxLayout();
     QPushButton *okButton = new QPushButton("OK");
     QPushButton *cancelButton = new QPushButton("Cancel");
-    okButton->setStyleSheet(R"(
-        QPushButton {
-            border-style: solid;
-            background-color: #3d3d3d;
-            color: #ffffff;
-            font-size: 11px;
-            font-weight: bold;
-            border-radius: 7px;
-            border-width: 2px;
-            border-color: #00ff00;
-            padding: 8px 15px;
-            outline: none;
-        }
-
-        QPushButton:hover {
-            color: #e0e0e0;
-            background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));
-            border-color: #2d89ef;
-        }
-
-        QPushButton:pressed {
-            background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:1 rgba(45, 45, 45, 255));
-            border-color: #da532c;
-        }
-    )");
-
-    cancelButton->setStyleSheet(okButton->styleSheet());  // Use same style for cancel button
     buttonLayout->addWidget(okButton);
     buttonLayout->addWidget(cancelButton);
     layout->addLayout(buttonLayout);
 
     connect(cancelButton, &QPushButton::clicked, &searchDialog, &QDialog::reject);
 
-    // Update validation based on combo box selection
-    connect(searchCriteria, &QComboBox::currentTextChanged, [=](const QString &text) {
-        if (text == "CIN" || text == "Phone") {
-            // Validator for 8-digit numeric values
-            searchInput->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d{8}"), searchInput));
-        } else if (text == "Email") {
-            // Validator for email format
-            QRegularExpression emailRegEx(R"([\w\.-]+@[\w\.-]+\.[a-zA-Z]{2,})");
-            searchInput->setValidator(new QRegularExpressionValidator(emailRegEx, searchInput));
-        } else {
-            // No validator for Name, allowing any text
-            searchInput->setValidator(nullptr);
-        }
-    });
-
+    // Connect the OK button to perform the search
     connect(okButton, &QPushButton::clicked, [=, &searchDialog]() {
         QString filterField = searchCriteria->currentText();
         QString searchValue = searchInput->text().trimmed();
@@ -521,8 +511,10 @@ void MainWindow::on_searchButton_clicked()
         else if (filterField == "Email") sqlField = "EMAIL";
         else if (filterField == "Phone") sqlField = "PHONE";
 
+        // Prepare the query, matching the same fields as loadEmployeeData
         QSqlQuery query;
-        query.prepare(QString("SELECT * FROM EMPLOYEE WHERE %1 LIKE :value").arg(sqlField));
+        query.prepare(QString("SELECT CINEMP, IDEMP, FULL_NAME, HIRE_DATE, ROLE, SALARY, EMAIL, DATE_OF_BIRTH, GENDER, PHONE "
+                              "FROM EMPLOYEE WHERE LOWER(%1) LIKE LOWER(:value)").arg(sqlField));
         query.bindValue(":value", "%" + searchValue + "%");
 
         if (!query.exec()) {
@@ -531,25 +523,43 @@ void MainWindow::on_searchButton_clicked()
             return;
         }
 
-        // Populate table view with search results
+        // Populate the table view with search results
         QStandardItemModel *model = new QStandardItemModel(this);
         model->setHorizontalHeaderLabels({"CINEMP", "IDEMP", "FULL NAME", "HIRE DATE", "ROLE", "SALARY", "EMAIL", "AGE", "GENDER", "PHONE"});
 
         while (query.next()) {
             QList<QStandardItem *> rowItems;
-            for (int i = 0; i < query.record().count(); i++) {
-                rowItems << new QStandardItem(query.value(i).toString());
-            }
+            QString cin = query.value("CINEMP").toString();
+
+            rowItems << new QStandardItem(cin);
+            rowItems << new QStandardItem(query.value("IDEMP").toString());
+            rowItems << new QStandardItem(query.value("FULL_NAME").toString());
+            rowItems << new QStandardItem(query.value("HIRE_DATE").toDate().toString("yyyy-MM-dd"));
+            rowItems << new QStandardItem(query.value("ROLE").toString());
+            rowItems << new QStandardItem(QString::number(query.value("SALARY").toDouble(), 'f', 2));
+            rowItems << new QStandardItem(query.value("EMAIL").toString());
+
+            // Calculate AGE dynamically from DATE_OF_BIRTH
+            QDate dob = query.value("DATE_OF_BIRTH").toDate();
+            int age = Employee::calculateAge(dob);
+            rowItems << new QStandardItem(QString::number(age));
+
+            rowItems << new QStandardItem(query.value("GENDER").toString());
+            rowItems << new QStandardItem(query.value("PHONE").toString());
+
             model->appendRow(rowItems);
         }
 
+        // Set the final model to the table view
         ui->tableView->setModel(model);
         ui->tableView->resizeColumnsToContents();
+
         searchDialog.accept();
     });
 
     searchDialog.exec();
 }
+
 void MainWindow::setupRoleBasedAccess()
 {
     if (userRole == "Pharmacy IT Specialist") {
