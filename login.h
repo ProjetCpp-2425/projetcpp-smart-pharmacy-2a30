@@ -1,6 +1,7 @@
 #ifndef LOGIN_H
 #define LOGIN_H
 
+#include "qserialport.h"
 #include <QDialog>
 #include <QString>
 #include <QSqlQuery>
@@ -23,7 +24,7 @@ private slots:
     void on_oklogin_clicked();
     void on_okregister_clicked();
     void on_gotoregister_clicked();
-
+    void on_arduinoLogin_clicked();
     // Forget password flow
     void on_forget_clicked();
     void on_okEmail_clicked();              // Send verification code via email
@@ -45,7 +46,11 @@ private:
     bool authenticateUser(const QString &cin, const QString &password);  // Validate login credentials
     bool isCinExists(const QString &cin);           // Check if CIN exists in the database
     bool isPasswordSet(const QString &cin);         // Check if the user already has a password
+
+    QString buffer;
+    QSerialPort *serialPort;
     QString userRole;
+
 };
 
 #endif // LOGIN_H

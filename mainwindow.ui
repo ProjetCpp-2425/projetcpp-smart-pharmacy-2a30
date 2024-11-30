@@ -29,7 +29,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="employeepage">
      <widget class="QFrame" name="frame_2">
@@ -801,13 +801,13 @@ QPushButton:disabled {
         <string/>
        </property>
       </widget>
-      <widget class="QPushButton" name="imageButton">
+      <widget class="QPushButton" name="tokenbutton">
        <property name="geometry">
         <rect>
-         <x>1050</x>
-         <y>20</y>
-         <width>91</width>
-         <height>41</height>
+         <x>470</x>
+         <y>30</y>
+         <width>171</width>
+         <height>29</height>
         </rect>
        </property>
        <property name="styleSheet">
@@ -816,7 +816,7 @@ QPushButton {
     border-style: solid;
     background-color: #3d3d3d;  /* Same dark background */
     color: #ffffff;  /* White text */
-    font-size: 15px;  /* Increase font size */
+    font-size: 11px;  /* Increase font size */
     font-weight: bold;  /* Make text bold */
     border-radius: 7px;  /* Rounded corners */
     border-width: 2px;  /* Set border width */
@@ -855,7 +855,7 @@ QPushButton:disabled {
 </string>
        </property>
        <property name="text">
-        <string>Upload</string>
+        <string>ADD TOKEN</string>
        </property>
       </widget>
      </widget>

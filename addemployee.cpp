@@ -7,6 +7,8 @@
 #include <QRegularExpression>
 #include <QDate>
 #include <QDebug>  // For debugging
+#include <QFile>
+#include <QFileDialog>
 
 AddEmployee::AddEmployee(QWidget *parent) :
     QDialog(parent),
@@ -28,6 +30,8 @@ AddEmployee::AddEmployee(QWidget *parent) :
 
     connect(ui->okbutton, &QPushButton::clicked, this, &AddEmployee::onOkButtonClicked);
     connect(ui->cancelbutton, &QPushButton::clicked, this, &AddEmployee::reject);
+    connect(ui->addImageButton, &QPushButton::clicked, this, &AddEmployee::on_addImageButton_clicked);
+
 }
 
 AddEmployee::~AddEmployee()
@@ -119,11 +123,12 @@ bool AddEmployee::addEmployeeToDatabase() {
         QMessageBox::warning(this, "Validation Errors", errorMessages.join("\n"));
         return false;
     }
-
+    QString imagePath = ui->imagePathLabel->text();
     // Insert into the database
     QSqlQuery query;
-    query.prepare("INSERT INTO EMPLOYEE (CINEMP, IDEMP, FULL_NAME, HIRE_DATE, ROLE, SALARY, EMAIL, DATE_OF_BIRTH, GENDER, PHONE) "
-                  "VALUES (:cinemp, :idemp, :full_name, :hire_date, :role, :salary, :email, :date_of_birth, :gender, :phone)");
+    query.prepare("INSERT INTO EMPLOYEE (CINEMP, IDEMP, FULL_NAME, HIRE_DATE, ROLE, SALARY, EMAIL, DATE_OF_BIRTH, GENDER, PHONE, IMAGE_PATH) "
+                  "VALUES (:cinemp, :idemp, :full_name, :hire_date, :role, :salary, :email, :date_of_birth, :gender, :phone, :image_path)");
+    query.bindValue(":image_path", imagePath);
     query.bindValue(":cinemp", getCin());
     query.bindValue(":idemp", getIdEmployee());
     query.bindValue(":full_name", getFullName());
@@ -174,4 +179,23 @@ void AddEmployee::generateEmployeeId()
     }
 
     ui->idEmployeeLineEdit->setReadOnly(true);
+}
+void AddEmployee::on_addImageButton_clicked() {
+    // Open a file dialog to select an image
+    QString imagePath = QFileDialog::getOpenFileName(this, "Select Employee Image", "", "Images (*.png *.jpg *.jpeg *.bmp)");
+    if (imagePath.isEmpty()) {
+        QMessageBox::warning(this, "Error", "No image selected.");
+        return;
+    }
+
+    // Display the selected image in the QLabel
+    QPixmap pixmap(imagePath);
+    if (pixmap.isNull()) {
+        QMessageBox::warning(this, "Error", "Failed to load the image.");
+        return;
+    }
+    ui->imagePathLabel->setPixmap(pixmap.scaled(ui->imagePathLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+    // Optionally store the image path in a class member or database
+    //this->imagePath = imagePath; // Assuming you have a class member `QString imagePath`.
 }

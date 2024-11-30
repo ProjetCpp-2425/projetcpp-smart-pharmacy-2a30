@@ -45,6 +45,23 @@ MainWindow::MainWindow(QWidget *parent, const QString &role) :
     setupRoleBasedAccess();
     // Load employees into the table view on startup
     loadEmployeeData();
+    //arduino
+    serialPort = new QSerialPort(this);
+    serialPort->setPortName("COM3"); // Replace with your Arduino's COM port
+    serialPort->setBaudRate(QSerialPort::Baud9600);
+    serialPort->setDataBits(QSerialPort::Data8);
+    serialPort->setParity(QSerialPort::NoParity);
+    serialPort->setStopBits(QSerialPort::OneStop);
+    serialPort->setFlowControl(QSerialPort::NoFlowControl);
+
+    if (!serialPort->open(QIODevice::ReadOnly)) {
+        qDebug() << "Failed to open serial port:" << serialPort->errorString();
+    } else {
+        qDebug() << "Serial port opened successfully!";
+    }
+
+    // Connect the serial port's readyRead signal to the slot
+    connect(serialPort, &QSerialPort::readyRead, this, &MainWindow::readSerialData);
     // Connect Add and Remove buttons to their respective slots
     connect(ui->addButton, &QPushButton::clicked, this, &MainWindow::on_addButton_clicked);
     connect(ui->removeButton, &QPushButton::clicked, this, &MainWindow::on_removeButton_clicked);
@@ -57,7 +74,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &role) :
     connect(ui->logoutButton, &QPushButton::clicked, this, &MainWindow::on_logoutButton_clicked);
     connect(ui->logoutButton1, &QPushButton::clicked, this, &MainWindow::on_logoutButton_clicked);
     connect(ui->tableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::onTableSelectionChanged);
-    connect(ui->imageButton, &QPushButton::clicked, this, &MainWindow::on_imageButton_clicked);
+    connect(ui->tokenbutton, &QPushButton::clicked, this, &MainWindow::on_tokenButton_clicked);
 
 
 }
@@ -65,7 +82,71 @@ MainWindow::MainWindow(QWidget *parent, const QString &role) :
 // Destructor
 MainWindow::~MainWindow()
 {
+    if (serialPort) {
+            serialPort->close();
+            delete serialPort;
+        }
     delete ui;
+}
+void MainWindow::on_tokenButton_clicked() {
+    // Ensure a row is selected in the table view
+    QModelIndexList selectedRows = ui->tableView->selectionModel()->selectedRows();
+    if (selectedRows.isEmpty()) {
+        QMessageBox::warning(this, "Error", "No employee selected. Please select an employee first.");
+        return;
+    }
+
+    // Show the "Waiting for Token" dialog
+    waitingDialog = new QDialog(this);
+    waitingDialog->setWindowTitle("Waiting for Token");
+    QLabel *label = new QLabel("Please scan the token...", waitingDialog);
+    QVBoxLayout *layout = new QVBoxLayout(waitingDialog);
+    layout->addWidget(label);
+    waitingDialog->setLayout(layout);
+    waitingDialog->resize(200, 100);
+    waitingDialog->show();
+
+    qDebug() << "Waiting for token scan...";
+}
+void MainWindow::readSerialData() {
+    // Append incoming data to the buffer
+    buffer.append(QString::fromUtf8(serialPort->readAll()));
+
+    // Check if the buffer contains a complete UID (terminated by \n)
+    if (buffer.contains("\n")) {
+        // Extract the UID by trimming whitespace and newline
+        QString uid = buffer.left(buffer.indexOf("\n")).trimmed();
+        buffer.remove(0, buffer.indexOf("\n") + 1); // Remove processed data from the buffer
+
+        qDebug() << "Scanned UID:" << uid;
+
+        // Check if UID is valid and dialog is active
+        if (!uid.isEmpty() && waitingDialog) {
+            waitingDialog->accept(); // Close the waiting dialog
+            waitingDialog = nullptr;
+
+            // Get the selected employee's ID from the table
+            QModelIndexList selectedRows = ui->tableView->selectionModel()->selectedRows();
+            QString employeeID = ui->tableView->model()->index(selectedRows[0].row(), 1).data().toString(); // Adjust the column index for IDEMP
+
+            // Save the UID to the database
+            saveTokenToDatabase(uid, employeeID);
+        }
+    }
+}
+void MainWindow::saveTokenToDatabase(const QString &uid, const QString &employeeID) {
+    QSqlQuery query;
+    query.prepare("UPDATE EMPLOYEE SET TOKEN_LOGIN = :token WHERE IDEMP = :id");
+    query.bindValue(":token", uid);
+    query.bindValue(":id", employeeID);
+
+    if (query.exec()) {
+        QMessageBox::information(this, "Success", "Token successfully assigned to employee.");
+        qDebug() << "Token UID:" << uid << "assigned to employee ID:" << employeeID;
+    } else {
+        QMessageBox::critical(this, "Error", "Failed to save token to database: " + query.lastError().text());
+        qDebug() << "Database error:" << query.lastError().text();
+    }
 }
 
 // Function to load employee data from the database
@@ -590,38 +671,7 @@ void MainWindow::on_logoutButton_clicked()
         qApp->quit();
     }
 }
-void MainWindow::on_imageButton_clicked()
-{
-    // Ensure an employee is selected
-    QModelIndexList selectedRows = ui->tableView->selectionModel()->selectedRows();
-    if (selectedRows.isEmpty()) {
-        QMessageBox::warning(this, "Error", "No employee selected. Please select an employee first.");
-        return;
-    }
 
-    // Get the selected employee's CINEMP (primary key)
-    QString cinemp = ui->tableView->model()->index(selectedRows[0].row(), 0).data().toString();
-
-    // Open a file dialog to select an image
-    QString imagePath = QFileDialog::getOpenFileName(this, "Select Employee Image", "", "Images (*.png *.jpg *.jpeg *.bmp)");
-    if (imagePath.isEmpty()) {
-        QMessageBox::warning(this, "Error", "No image selected.");
-        return;
-    }
-
-    // Update the database with the image path
-    QSqlQuery query;
-    query.prepare("UPDATE EMPLOYEE SET IMAGE_PATH = :imagePath WHERE CINEMP = :cinemp");
-    query.bindValue(":imagePath", imagePath);
-    query.bindValue(":cinemp", cinemp);
-
-    if (query.exec()) {
-        QMessageBox::information(this, "Success", "Image uploaded successfully!");
-        qDebug() << "Image path updated in database: " << imagePath;
-    } else {
-        QMessageBox::warning(this, "Error", "Failed to update the database: " + query.lastError().text());
-    }
-}
 
 void MainWindow::onTableSelectionChanged()
 {

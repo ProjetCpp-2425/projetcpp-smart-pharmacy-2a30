@@ -34,6 +34,8 @@ public:
     void clearFields();
     void generateEmployeeId();
 
+
+
 public slots:
     void onOkButtonClicked();
 
@@ -42,6 +44,8 @@ private:
 
     // Function to check if a field is unique in the database
     bool isUnique(const QString &field, const QString &value, bool caseInsensitive);
+private slots :
+    void on_addImageButton_clicked();
 };
 
 #endif // ADDEMPLOYEE_H

@@ -1,4 +1,5 @@
 #include "login.h"
+#include "qboxlayout.h"
 #include "ui_login.h"
 #include "mainwindow.h"
 #include <QMessageBox>
@@ -20,6 +21,7 @@ Login::Login(QWidget *parent) :
     ui->setupUi(this);
     this->setWindowTitle("PHARMEASE - Login");
 
+
     // Initialize UI states
     ui->stackedWidget->setCurrentWidget(ui->login);
     ui->passwordlogin->setEchoMode(QLineEdit::Password);
@@ -39,7 +41,7 @@ Login::Login(QWidget *parent) :
     connect(ui->ok_email, &QPushButton::clicked, this, &Login::on_okEmail_clicked);
     connect(ui->ok_verificationcode, &QPushButton::clicked, this, &Login::on_okVerificationCode_clicked);
     connect(ui->ok_newpassword, &QPushButton::clicked, this, &Login::on_okNewPassword_clicked);
-
+    connect(ui->arduinologin, &QPushButton::clicked, this, &Login::on_arduinoLogin_clicked);
     // Show/hide password toggle
     connect(ui->showpassword, &QCheckBox::toggled, this, &Login::on_showpassword_toggled);
     connect(ui->showpassword_2, &QCheckBox::toggled, this, [this](bool checked) {
@@ -416,4 +418,80 @@ void Login::exitApplication()
 {
     qDebug() << "Exit button clicked. Exiting application...";
     QCoreApplication::exit(0);
+}
+void Login::on_arduinoLogin_clicked() {
+    // Show the "Waiting for Token" dialog
+    QDialog *waitingDialog = new QDialog(this);
+    waitingDialog->setWindowTitle("Waiting for Token");
+    QLabel *label = new QLabel("Please scan your token...", waitingDialog);
+    QVBoxLayout *layout = new QVBoxLayout(waitingDialog);
+    layout->addWidget(label);
+    waitingDialog->setLayout(layout);
+    waitingDialog->resize(200, 100);
+    waitingDialog->show();
+
+    qDebug() << "Waiting for token scan...";
+
+    // Configure the serial port
+    QSerialPort *serialPort = new QSerialPort(this);
+    serialPort->setPortName("COM3"); // Adjust to match your Arduino's COM port
+    serialPort->setBaudRate(QSerialPort::Baud9600);
+    serialPort->setDataBits(QSerialPort::Data8);
+    serialPort->setParity(QSerialPort::NoParity);
+    serialPort->setStopBits(QSerialPort::OneStop);
+    serialPort->setFlowControl(QSerialPort::NoFlowControl);
+
+    if (!serialPort->open(QIODevice::ReadOnly)) {
+        qDebug() << "Failed to open serial port:" << serialPort->errorString();
+        QMessageBox::warning(this, "Error", "Failed to connect to Arduino. Please check your setup.");
+        waitingDialog->close();
+        return;
+    }
+
+    // Connect to the serial port's readyRead signal
+    connect(serialPort, &QSerialPort::readyRead, [=]() mutable {
+        // Append data to the buffer
+        buffer.append(QString::fromUtf8(serialPort->readAll()));
+
+        // Check if the buffer contains a complete token (terminated by \n)
+        if (buffer.contains("\n")) {
+            QString token = buffer.left(buffer.indexOf("\n")).trimmed(); // Extract the token
+            buffer.remove(0, buffer.indexOf("\n") + 1); // Remove the processed token from the buffer
+
+            qDebug() << "Scanned token:" << token;
+
+            // Check if the token is valid in the database
+            QSqlQuery query;
+            query.prepare("SELECT ROLE FROM EMPLOYEE WHERE TOKEN_LOGIN = :token");
+            query.bindValue(":token", token);
+
+            if (query.exec() && query.next()) {
+                // Token is valid, retrieve user role and log in
+                QString role = query.value("ROLE").toString();
+                userRole = role;  // Save the role
+                qDebug() << "Token valid. User role:" << role;
+
+                // Close dialog and proceed to the main application
+                waitingDialog->accept();
+                serialPort->close();
+                delete serialPort;
+
+                this->accept(); // Close login dialog with accepted state
+            } else {
+                // Invalid token
+                QMessageBox::warning(this, "Login Failed", "Invalid token. Please try again.");
+                qDebug() << "Invalid token.";
+            }
+        }
+    });
+
+    // Add a timeout to close the dialog if no token is scanned
+    QTimer::singleShot(10000, [=]() {
+        if (waitingDialog->isVisible()) {
+            QMessageBox::warning(this, "Timeout", "No token was scanned. Please try again.");
+            waitingDialog->close();
+            serialPort->close();
+            delete serialPort;
+        }
+    });
 }
