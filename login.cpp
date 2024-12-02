@@ -441,7 +441,7 @@ void Login::on_arduinoLogin_clicked() {
     serialPort->setStopBits(QSerialPort::OneStop);
     serialPort->setFlowControl(QSerialPort::NoFlowControl);
 
-    if (!serialPort->open(QIODevice::ReadOnly)) {
+    if (!serialPort->open(QIODevice::ReadWrite)) { // Ensure Read/Write mode
         qDebug() << "Failed to open serial port:" << serialPort->errorString();
         QMessageBox::warning(this, "Error", "Failed to connect to Arduino. Please check your setup.");
         waitingDialog->close();
@@ -462,21 +462,30 @@ void Login::on_arduinoLogin_clicked() {
 
             // Check if the token is valid in the database
             QSqlQuery query;
-            query.prepare("SELECT ROLE FROM EMPLOYEE WHERE TOKEN_LOGIN = :token");
+            query.prepare("SELECT FULL_NAME, ROLE FROM EMPLOYEE WHERE TOKEN_LOGIN = :token");
             query.bindValue(":token", token);
 
             if (query.exec() && query.next()) {
-                // Token is valid, retrieve user role and log in
+                // Token is valid, retrieve user full name and role
+                QString fullName = query.value("FULL_NAME").toString();
                 QString role = query.value("ROLE").toString();
-                userRole = role;  // Save the role
-                qDebug() << "Token valid. User role:" << role;
+                userRole = role;  // Save the role for further use
+                qDebug() << "Token valid. Employee full name:" << fullName;
 
-                // Close dialog and proceed to the main application
+                // Send the welcome message to Arduino
+                QString message = fullName;
+                if (serialPort->write(message.toUtf8() + "\n") == -1) {
+                    qDebug() << "Failed to send message to Arduino.";
+                } else {
+                    qDebug() << "Message sent to Arduino: " << message;
+                }
+
+                // Close the waiting dialog and proceed with login
                 waitingDialog->accept();
                 serialPort->close();
                 delete serialPort;
 
-                this->accept(); // Close login dialog with accepted state
+                this->accept(); // Close the login dialog with accepted state
             } else {
                 // Invalid token
                 QMessageBox::warning(this, "Login Failed", "Invalid token. Please try again.");
