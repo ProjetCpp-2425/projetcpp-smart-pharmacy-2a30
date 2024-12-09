@@ -1,0 +1,2 @@
+UPDATE employe SET
+NUME=10 WHERE IDE=11;
