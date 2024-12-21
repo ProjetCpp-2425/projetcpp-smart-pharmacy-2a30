@@ -1,0 +1,1390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Login</class>
+ <widget class="QDialog" name="Login">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>677</width>
+    <height>503</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QStackedWidget" name="stackedWidget">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>631</width>
+     <height>471</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="QWidget" name="login">
+    <widget class="QToolButton" name="toolButton">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>480</y>
+       <width>25</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="userlogin">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>80</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLineEdit Styling */
+QLineEdit {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 6px;  /* Padding inside the line edit */
+    outline: none; /* Remove default focus outline */
+    selection-background-color: #2d89ef; /* Blue selection background */
+    selection-color: #fff; /* White selection text */
+}
+
+/* Hover effect */
+QLineEdit:hover {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on hover */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Focused effect (when the user clicks into the QLineEdit) */
+QLineEdit:focus {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:1 rgba(45, 45, 45, 255));  /* Slightly darker background when focused */
+    border-color: #da532c;  /* Red-orange border on focus */
+}
+
+/* Disabled QLineEdit */
+QLineEdit:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled state */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="passlogin">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>140</y>
+       <width>141</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLabel Styling */
+QLabel {
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-style: solid;
+    border-color: #00ff00;  /* Green border */
+    padding: 5px;  /* Padding around the label */
+    margin: 3px;  /* Margin around the label */
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>Password :</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="passwordlogin">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>140</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLineEdit Styling */
+QLineEdit {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 6px;  /* Padding inside the line edit */
+    outline: none; /* Remove default focus outline */
+    selection-background-color: #2d89ef; /* Blue selection background */
+    selection-color: #fff; /* White selection text */
+}
+
+/* Hover effect */
+QLineEdit:hover {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on hover */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Focused effect (when the user clicks into the QLineEdit) */
+QLineEdit:focus {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:1 rgba(45, 45, 45, 255));  /* Slightly darker background when focused */
+    border-color: #da532c;  /* Red-orange border on focus */
+}
+
+/* Disabled QLineEdit */
+QLineEdit:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled state */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="cinlogin">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>80</y>
+       <width>141</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLabel Styling */
+QLabel {
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-style: solid;
+    border-color: #00ff00;  /* Green border */
+    padding: 5px;  /* Padding around the label */
+    margin: 3px;  /* Margin around the label */
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>CIN :</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="oklogin">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>390</y>
+       <width>83</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QPushButton Styling */
+QPushButton {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background */
+    color: #ffffff;  /* White text */
+    font-size: 11px;  /* Increase font size */
+    font-weight: bold;  /* Make text bold */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 8px 15px;  /* Padding for button spacing */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Hover effect */
+QPushButton:hover {
+    color: #e0e0e0;  /* Slightly brighter text on hover */
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Pressed/Clicked effect (with border unchanged) */
+QPushButton:pressed {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on press */
+    border-color: #da532c;  /* Keep the orange border when pressed */
+    border-width: 2px;  /* Keep the border width */
+}
+
+/* Checked/Pressed button stays in this state */
+QPushButton:checked {
+    background-color: #76797C;  /* Grayish background when checked */
+    border-color: #6A6969;  /* Gray border when checked */
+    color: #ffffff;  /* White text when checked */
+}
+
+/* Disabled Button */
+QPushButton:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled button */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+     <property name="text">
+      <string>OK</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cancellogin">
+     <property name="geometry">
+      <rect>
+       <x>370</x>
+       <y>390</y>
+       <width>83</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QPushButton Styling */
+QPushButton {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background */
+    color: #ffffff;  /* White text */
+    font-size: 11px;  /* Increase font size */
+    font-weight: bold;  /* Make text bold */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 8px 15px;  /* Padding for button spacing */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Hover effect */
+QPushButton:hover {
+    color: #e0e0e0;  /* Slightly brighter text on hover */
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Pressed/Clicked effect (with border unchanged) */
+QPushButton:pressed {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on press */
+    border-color: #da532c;  /* Keep the orange border when pressed */
+    border-width: 2px;  /* Keep the border width */
+}
+
+/* Checked/Pressed button stays in this state */
+QPushButton:checked {
+    background-color: #76797C;  /* Grayish background when checked */
+    border-color: #6A6969;  /* Gray border when checked */
+    color: #ffffff;  /* White text when checked */
+}
+
+/* Disabled Button */
+QPushButton:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled button */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+     <property name="text">
+      <string>EXIT</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="forget">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>320</y>
+       <width>131</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QPushButton Styling */
+QPushButton {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background */
+    color: #ffffff;  /* White text */
+    font-size: 11px;  /* Increase font size */
+    font-weight: bold;  /* Make text bold */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 8px 15px;  /* Padding for button spacing */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Hover effect */
+QPushButton:hover {
+    color: #e0e0e0;  /* Slightly brighter text on hover */
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Pressed/Clicked effect (with border unchanged) */
+QPushButton:pressed {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on press */
+    border-color: #da532c;  /* Keep the orange border when pressed */
+    border-width: 2px;  /* Keep the border width */
+}
+
+/* Checked/Pressed button stays in this state */
+QPushButton:checked {
+    background-color: #76797C;  /* Grayish background when checked */
+    border-color: #6A6969;  /* Gray border when checked */
+    color: #ffffff;  /* White text when checked */
+}
+
+/* Disabled Button */
+QPushButton:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled button */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+     <property name="text">
+      <string>Forget Password</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="gotoregister">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>380</y>
+       <width>151</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QPushButton Styling */
+QPushButton {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background */
+    color: #ffffff;  /* White text */
+    font-size: 11px;  /* Increase font size */
+    font-weight: bold;  /* Make text bold */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 8px 15px;  /* Padding for button spacing */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Hover effect */
+QPushButton:hover {
+    color: #e0e0e0;  /* Slightly brighter text on hover */
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Pressed/Clicked effect (with border unchanged) */
+QPushButton:pressed {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on press */
+    border-color: #da532c;  /* Keep the orange border when pressed */
+    border-width: 2px;  /* Keep the border width */
+}
+
+/* Checked/Pressed button stays in this state */
+QPushButton:checked {
+    background-color: #76797C;  /* Grayish background when checked */
+    border-color: #6A6969;  /* Gray border when checked */
+    color: #ffffff;  /* White text when checked */
+}
+
+/* Disabled Button */
+QPushButton:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled button */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+     <property name="text">
+      <string>Register</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="showpassword">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>190</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QCheckBox Styling */
+QCheckBox {
+    background-color: #3d3d3d;  /* Dark background */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border: 2px solid #00ff00;  /* Green border */
+    padding: 5px;  /* Padding around the checkbox text */
+    margin: 3px;  /* Margin around the checkbox */
+}
+
+/* QCheckBox Indicator Styling (Checkbox Square) */
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;  /* Slightly rounded indicator */
+    background-color: #3d3d3d;  /* Match background */
+    border: 2px solid #00ff00;  /* Green border around the checkbox */
+}
+
+/* QCheckBox Indicator When Checked */
+QCheckBox::indicator:checked {
+    background-color: #00ff00;  /* Green background when checked */
+    border: 2px solid #00ff00;  /* Green border when checked */
+}
+
+/* QCheckBox Indicator When Hovered */
+QCheckBox::indicator:hover {
+    background-color: #4caf50;  /* Lighter green when hovered */
+    border: 2px solid #4caf50;  /* Lighter green border on hover */
+}
+
+/* QCheckBox Disabled Styling */
+QCheckBox:disabled {
+    color: #666;  /* Greyed-out text */
+    border-color: #666;  /* Greyed-out border */
+}
+</string>
+     </property>
+     <property name="text">
+      <string>Show Password</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="title">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>10</y>
+       <width>71</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLabel Styling */
+QLabel {
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-style: solid;
+    border-color: #00ff00;  /* Green border */
+    padding: 5px;  /* Padding around the label */
+    margin: 3px;  /* Margin around the label */
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>LOGIN</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="arduinologin">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>430</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QPushButton Styling */
+QPushButton {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background */
+    color: #ffffff;  /* White text */
+    font-size: 13px;  /* Increase font size */
+    font-weight: bold;  /* Make text bold */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 8px 15px;  /* Padding for button spacing */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Hover effect */
+QPushButton:hover {
+    color: #e0e0e0;  /* Slightly brighter text on hover */
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Pressed/Clicked effect (with border unchanged) */
+QPushButton:pressed {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on press */
+    border-color: #da532c;  /* Keep the orange border when pressed */
+    border-width: 2px;  /* Keep the border width */
+}
+
+/* Checked/Pressed button stays in this state */
+QPushButton:checked {
+    background-color: #76797C;  /* Grayish background when checked */
+    border-color: #6A6969;  /* Gray border when checked */
+    color: #ffffff;  /* White text when checked */
+}
+
+/* Disabled Button */
+QPushButton:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled button */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+     <property name="text">
+      <string>Login with arduino</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="register_2">
+    <widget class="QLabel" name="userregister">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>90</y>
+       <width>141</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLabel Styling */
+QLabel {
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-style: solid;
+    border-color: #00ff00;  /* Green border */
+    padding: 5px;  /* Padding around the label */
+    margin: 3px;  /* Margin around the label */
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>CIN :</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="registeruser">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>90</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLineEdit Styling */
+QLineEdit {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 6px;  /* Padding inside the line edit */
+    outline: none; /* Remove default focus outline */
+    selection-background-color: #2d89ef; /* Blue selection background */
+    selection-color: #fff; /* White selection text */
+}
+
+/* Hover effect */
+QLineEdit:hover {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on hover */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Focused effect (when the user clicks into the QLineEdit) */
+QLineEdit:focus {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:1 rgba(45, 45, 45, 255));  /* Slightly darker background when focused */
+    border-color: #da532c;  /* Red-orange border on focus */
+}
+
+/* Disabled QLineEdit */
+QLineEdit:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled state */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="registerpass">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>180</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLineEdit Styling */
+QLineEdit {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 6px;  /* Padding inside the line edit */
+    outline: none; /* Remove default focus outline */
+    selection-background-color: #2d89ef; /* Blue selection background */
+    selection-color: #fff; /* White selection text */
+}
+
+/* Hover effect */
+QLineEdit:hover {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on hover */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Focused effect (when the user clicks into the QLineEdit) */
+QLineEdit:focus {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:1 rgba(45, 45, 45, 255));  /* Slightly darker background when focused */
+    border-color: #da532c;  /* Red-orange border on focus */
+}
+
+/* Disabled QLineEdit */
+QLineEdit:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled state */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="passregister">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>180</y>
+       <width>141</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLabel Styling */
+QLabel {
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-style: solid;
+    border-color: #00ff00;  /* Green border */
+    padding: 5px;  /* Padding around the label */
+    margin: 3px;  /* Margin around the label */
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>Password :</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="ok">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>280</y>
+       <width>83</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QPushButton Styling */
+QPushButton {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background */
+    color: #ffffff;  /* White text */
+    font-size: 11px;  /* Increase font size */
+    font-weight: bold;  /* Make text bold */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 8px 15px;  /* Padding for button spacing */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Hover effect */
+QPushButton:hover {
+    color: #e0e0e0;  /* Slightly brighter text on hover */
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Pressed/Clicked effect (with border unchanged) */
+QPushButton:pressed {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on press */
+    border-color: #da532c;  /* Keep the orange border when pressed */
+    border-width: 2px;  /* Keep the border width */
+}
+
+/* Checked/Pressed button stays in this state */
+QPushButton:checked {
+    background-color: #76797C;  /* Grayish background when checked */
+    border-color: #6A6969;  /* Gray border when checked */
+    color: #ffffff;  /* White text when checked */
+}
+
+/* Disabled Button */
+QPushButton:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled button */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+     <property name="text">
+      <string>OK</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cancel">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>280</y>
+       <width>83</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QPushButton Styling */
+QPushButton {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background */
+    color: #ffffff;  /* White text */
+    font-size: 11px;  /* Increase font size */
+    font-weight: bold;  /* Make text bold */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 8px 15px;  /* Padding for button spacing */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Hover effect */
+QPushButton:hover {
+    color: #e0e0e0;  /* Slightly brighter text on hover */
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Pressed/Clicked effect (with border unchanged) */
+QPushButton:pressed {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on press */
+    border-color: #da532c;  /* Keep the orange border when pressed */
+    border-width: 2px;  /* Keep the border width */
+}
+
+/* Checked/Pressed button stays in this state */
+QPushButton:checked {
+    background-color: #76797C;  /* Grayish background when checked */
+    border-color: #6A6969;  /* Gray border when checked */
+    color: #ffffff;  /* White text when checked */
+}
+
+/* Disabled Button */
+QPushButton:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled button */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+     <property name="text">
+      <string>CANCEL</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="title2">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>10</y>
+       <width>81</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLabel Styling */
+QLabel {
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-style: solid;
+    border-color: #00ff00;  /* Green border */
+    padding: 5px;  /* Padding around the label */
+    margin: 3px;  /* Margin around the label */
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>Register</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="forget_2">
+    <widget class="QLineEdit" name="forgetuser">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>100</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLineEdit Styling */
+QLineEdit {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 6px;  /* Padding inside the line edit */
+    outline: none; /* Remove default focus outline */
+    selection-background-color: #2d89ef; /* Blue selection background */
+    selection-color: #fff; /* White selection text */
+}
+
+/* Hover effect */
+QLineEdit:hover {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on hover */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Focused effect (when the user clicks into the QLineEdit) */
+QLineEdit:focus {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:1 rgba(45, 45, 45, 255));  /* Slightly darker background when focused */
+    border-color: #da532c;  /* Red-orange border on focus */
+}
+
+/* Disabled QLineEdit */
+QLineEdit:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled state */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="forget_3">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>100</y>
+       <width>141</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLabel Styling */
+QLabel {
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-style: solid;
+    border-color: #00ff00;  /* Green border */
+    padding: 5px;  /* Padding around the label */
+    margin: 3px;  /* Margin around the label */
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>Email :</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cancel_2">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>440</y>
+       <width>83</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QPushButton Styling */
+QPushButton {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background */
+    color: #ffffff;  /* White text */
+    font-size: 11px;  /* Increase font size */
+    font-weight: bold;  /* Make text bold */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 8px 15px;  /* Padding for button spacing */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Hover effect */
+QPushButton:hover {
+    color: #e0e0e0;  /* Slightly brighter text on hover */
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Pressed/Clicked effect (with border unchanged) */
+QPushButton:pressed {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on press */
+    border-color: #da532c;  /* Keep the orange border when pressed */
+    border-width: 2px;  /* Keep the border width */
+}
+
+/* Checked/Pressed button stays in this state */
+QPushButton:checked {
+    background-color: #76797C;  /* Grayish background when checked */
+    border-color: #6A6969;  /* Gray border when checked */
+    color: #ffffff;  /* White text when checked */
+}
+
+/* Disabled Button */
+QPushButton:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled button */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+     <property name="text">
+      <string>CANCEL</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="forget_4">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>200</y>
+       <width>161</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLabel Styling */
+QLabel {
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-style: solid;
+    border-color: #00ff00;  /* Green border */
+    padding: 5px;  /* Padding around the label */
+    margin: 3px;  /* Margin around the label */
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>Verification Code :</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="forgetuser_2">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>200</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLineEdit Styling */
+QLineEdit {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 6px;  /* Padding inside the line edit */
+    outline: none; /* Remove default focus outline */
+    selection-background-color: #2d89ef; /* Blue selection background */
+    selection-color: #fff; /* White selection text */
+}
+
+/* Hover effect */
+QLineEdit:hover {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on hover */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Focused effect (when the user clicks into the QLineEdit) */
+QLineEdit:focus {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:1 rgba(45, 45, 45, 255));  /* Slightly darker background when focused */
+    border-color: #da532c;  /* Red-orange border on focus */
+}
+
+/* Disabled QLineEdit */
+QLineEdit:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled state */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="forget_5">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>300</y>
+       <width>161</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLabel Styling */
+QLabel {
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-style: solid;
+    border-color: #00ff00;  /* Green border */
+    padding: 5px;  /* Padding around the label */
+    margin: 3px;  /* Margin around the label */
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>New Password :</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="forgetuser_3">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>300</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLineEdit Styling */
+QLineEdit {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 6px;  /* Padding inside the line edit */
+    outline: none; /* Remove default focus outline */
+    selection-background-color: #2d89ef; /* Blue selection background */
+    selection-color: #fff; /* White selection text */
+}
+
+/* Hover effect */
+QLineEdit:hover {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on hover */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Focused effect (when the user clicks into the QLineEdit) */
+QLineEdit:focus {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:1 rgba(45, 45, 45, 255));  /* Slightly darker background when focused */
+    border-color: #da532c;  /* Red-orange border on focus */
+}
+
+/* Disabled QLineEdit */
+QLineEdit:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled state */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="showpassword_2">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>360</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QCheckBox Styling */
+QCheckBox {
+    background-color: #3d3d3d;  /* Dark background */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border: 2px solid #00ff00;  /* Green border */
+    padding: 5px;  /* Padding around the checkbox text */
+    margin: 3px;  /* Margin around the checkbox */
+}
+
+/* QCheckBox Indicator Styling (Checkbox Square) */
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;  /* Slightly rounded indicator */
+    background-color: #3d3d3d;  /* Match background */
+    border: 2px solid #00ff00;  /* Green border around the checkbox */
+}
+
+/* QCheckBox Indicator When Checked */
+QCheckBox::indicator:checked {
+    background-color: #00ff00;  /* Green background when checked */
+    border: 2px solid #00ff00;  /* Green border when checked */
+}
+
+/* QCheckBox Indicator When Hovered */
+QCheckBox::indicator:hover {
+    background-color: #4caf50;  /* Lighter green when hovered */
+    border: 2px solid #4caf50;  /* Lighter green border on hover */
+}
+
+/* QCheckBox Disabled Styling */
+QCheckBox:disabled {
+    color: #666;  /* Greyed-out text */
+    border-color: #666;  /* Greyed-out border */
+}
+</string>
+     </property>
+     <property name="text">
+      <string>Show Password</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="title3">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>20</y>
+       <width>131</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QLabel Styling */
+QLabel {
+    background-color: #3d3d3d;  /* Same dark background as QPushButton */
+    color: #fff;  /* White text */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-style: solid;
+    border-color: #00ff00;  /* Green border */
+    padding: 5px;  /* Padding around the label */
+    margin: 3px;  /* Margin around the label */
+}
+
+</string>
+     </property>
+     <property name="text">
+      <string>Reset Password</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="ok_email">
+     <property name="geometry">
+      <rect>
+       <x>480</x>
+       <y>100</y>
+       <width>83</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QPushButton Styling */
+QPushButton {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background */
+    color: #ffffff;  /* White text */
+    font-size: 11px;  /* Increase font size */
+    font-weight: bold;  /* Make text bold */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 8px 15px;  /* Padding for button spacing */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Hover effect */
+QPushButton:hover {
+    color: #e0e0e0;  /* Slightly brighter text on hover */
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Pressed/Clicked effect (with border unchanged) */
+QPushButton:pressed {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on press */
+    border-color: #da532c;  /* Keep the orange border when pressed */
+    border-width: 2px;  /* Keep the border width */
+}
+
+/* Checked/Pressed button stays in this state */
+QPushButton:checked {
+    background-color: #76797C;  /* Grayish background when checked */
+    border-color: #6A6969;  /* Gray border when checked */
+    color: #ffffff;  /* White text when checked */
+}
+
+/* Disabled Button */
+QPushButton:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled button */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+     <property name="text">
+      <string>OK</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="ok_verificationcode">
+     <property name="geometry">
+      <rect>
+       <x>520</x>
+       <y>210</y>
+       <width>83</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QPushButton Styling */
+QPushButton {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background */
+    color: #ffffff;  /* White text */
+    font-size: 11px;  /* Increase font size */
+    font-weight: bold;  /* Make text bold */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 8px 15px;  /* Padding for button spacing */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Hover effect */
+QPushButton:hover {
+    color: #e0e0e0;  /* Slightly brighter text on hover */
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Pressed/Clicked effect (with border unchanged) */
+QPushButton:pressed {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on press */
+    border-color: #da532c;  /* Keep the orange border when pressed */
+    border-width: 2px;  /* Keep the border width */
+}
+
+/* Checked/Pressed button stays in this state */
+QPushButton:checked {
+    background-color: #76797C;  /* Grayish background when checked */
+    border-color: #6A6969;  /* Gray border when checked */
+    color: #ffffff;  /* White text when checked */
+}
+
+/* Disabled Button */
+QPushButton:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled button */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+     <property name="text">
+      <string>OK</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="ok_newpassword">
+     <property name="geometry">
+      <rect>
+       <x>470</x>
+       <y>300</y>
+       <width>83</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* QPushButton Styling */
+QPushButton {
+    border-style: solid;
+    background-color: #3d3d3d;  /* Same dark background */
+    color: #ffffff;  /* White text */
+    font-size: 11px;  /* Increase font size */
+    font-weight: bold;  /* Make text bold */
+    border-radius: 7px;  /* Rounded corners */
+    border-width: 2px;  /* Set border width */
+    border-color: #00ff00;  /* Green border */
+    padding: 8px 15px;  /* Padding for button spacing */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Hover effect */
+QPushButton:hover {
+    color: #e0e0e0;  /* Slightly brighter text on hover */
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(45, 45, 45, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background */
+    border-color: #2d89ef;  /* Blue border on hover */
+}
+
+/* Pressed/Clicked effect (with border unchanged) */
+QPushButton:pressed {
+    background-color: qlineargradient(spread:pad, x1:0.517, y1:0, x2:0.517, y2:1, stop:0 rgba(29, 29, 29, 255), stop:0.505682 rgba(45, 45, 45, 255), stop:1 rgba(29, 29, 29, 255));  /* Darker background on press */
+    border-color: #da532c;  /* Keep the orange border when pressed */
+    border-width: 2px;  /* Keep the border width */
+}
+
+/* Checked/Pressed button stays in this state */
+QPushButton:checked {
+    background-color: #76797C;  /* Grayish background when checked */
+    border-color: #6A6969;  /* Gray border when checked */
+    color: #ffffff;  /* White text when checked */
+}
+
+/* Disabled Button */
+QPushButton:disabled {
+    background-color: #2b2b2b;  /* Darker background for disabled button */
+    color: #aaaaaa;  /* Gray text when disabled */
+    border-color: #555555;  /* Lighter border when disabled */
+}
+</string>
+     </property>
+     <property name="text">
+      <string>OK</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="countdownLabel">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>240</y>
+       <width>161</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
