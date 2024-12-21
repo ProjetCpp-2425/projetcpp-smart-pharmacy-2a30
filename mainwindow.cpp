@@ -1513,39 +1513,6 @@ void MainWindow::on_SMS_clicked()
 }
 
 
-void MainWindow::envoyerSMS(const QString &destinataire, const QString &message)
-{
-    // SID et auth token de Twilio
-    QString sid = "ACa916896cb882593fe588541ef3e80f70";
-    QString authToken = "73eac610e02d728b88514a3cd08f061e";
-
-    // Construire l'URL de l'API Twilio
-    QString url = "https://api.twilio.com/2010-04-01/Accounts/" + sid + "/Messages.json";
-
-    // Créer le gestionnaire de réseau
-    QNetworkAccessManager *networkAccessManager = new QNetworkAccessManager(this);
-   // networkAccessManager->setNetworkAccessible(QNetworkAccessManager::Accessible); // Définir l'accessibilité du réseau
-    connect(networkAccessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
-
-    // Construire les données de la requête
-    QByteArray postData;
-    postData.append("To=" + destinataire.toUtf8());
-    postData.append("&From=+18059208024");
-    postData.append("&Body=" + message.toUtf8());
-
-    // Créer la requête HTTP
-    QNetworkRequest request;
-    request.setUrl(QUrl(url));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    request.setRawHeader("Authorization", "Basic " + QByteArray(QString("%1:%2").arg(sid).arg(authToken).toUtf8()).toBase64());
-
-
-    // Envoyer la requête
-    networkAccessManager->post(request, postData);
-
-    // Afficher un message de succès
-    QMessageBox::information(this, "Envoi SMS", "Le SMS a été envoyé avec succès.");
-}
 void MainWindow::populateSupplierList()
 {
     // Assurez-vous que la connexion à la base de données est ouverte
